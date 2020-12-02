@@ -16,6 +16,11 @@ async function getFakeCaptcha(req: Request, res: Response) {
 const premTree = {
   project: {
     main: true,
+    list: true,
+    edit: true,
+  },
+  admin: {
+    main: true,
     list: false,
     edit: true,
   },
@@ -24,7 +29,7 @@ const premTree = {
 // 代码中会兼容本地 service mock 以及部署站点的静态数据
 export default {
   // 支持值为 Object 和 Array
-  'GET /v1/api/currentUser': {
+  'GET /api/v1/currentUser': {
     code: 200,
     result: {
       userid: 4,
