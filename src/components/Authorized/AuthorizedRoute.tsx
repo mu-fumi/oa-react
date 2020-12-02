@@ -1,10 +1,10 @@
 import { Redirect, Route } from 'umi';
 import React from 'react';
-import { IPremList } from '@/models/user';
+import { IPremTree } from '@/models/user';
 import Authorized from './Authorized';
 
 interface AuthorizedRouteProps {
-  permList: IPremList;
+  premTree: IPremTree;
   component: React.ComponentClass<any, any>;
   render: (props: any) => React.ReactNode;
   redirectPath: string;
@@ -14,14 +14,14 @@ interface AuthorizedRouteProps {
 const AuthorizedRoute: React.FC<AuthorizedRouteProps> = ({
   component: Component,
   render,
-  permList,
+  premTree,
   perm,
   redirectPath,
   ...rest
 }) => (
   <Authorized
     perm={perm}
-    permList={permList}
+    premTree={premTree}
     noMatch={
       <Route
         {...rest}

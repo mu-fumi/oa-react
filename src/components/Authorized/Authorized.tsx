@@ -1,12 +1,12 @@
 import React from 'react';
 import { Result } from 'antd';
 import { checkPermRender } from '@/utils/checkPerm';
-import { IPremList } from '@/models/user';
+import { IPremTree } from '@/models/user';
 import AuthorizedRoute from './AuthorizedRoute';
 
 interface AuthorizedProps {
   perm: string;
-  permList: IPremList;
+  premTree: IPremTree;
   noMatch?: React.ReactNode;
 }
 
@@ -18,7 +18,7 @@ type IAuthorizedType = React.FC<AuthorizedProps> & {
 const Authorized: React.FC<AuthorizedProps> = ({
   children,
   perm,
-  permList,
+  premTree,
   noMatch = (
     <Result
       status="403"
@@ -29,7 +29,7 @@ const Authorized: React.FC<AuthorizedProps> = ({
 }) => {
   const childrenRender: React.ReactNode =
     typeof children === 'undefined' ? null : children;
-  const dom = checkPermRender(perm, permList, childrenRender, noMatch);
+  const dom = checkPermRender(perm, premTree, childrenRender, noMatch);
   return <>{dom}</>;
 };
 

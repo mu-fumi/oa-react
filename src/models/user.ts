@@ -2,8 +2,9 @@ import { Effect, Reducer } from 'umi';
 
 import { queryCurrent } from '@/services/user';
 
-export type IPremList = string[];
-
+export interface IPremTree {
+  [key: string]: IPremTree | boolean;
+}
 export interface CurrentUser {
   avatar?: string;
   username?: string;
@@ -16,7 +17,7 @@ export interface CurrentUser {
 
 export interface UserModelState {
   currentUser?: CurrentUser;
-  permList: IPremList;
+  premTree: IPremTree;
 }
 
 export interface UserModelType {
@@ -35,7 +36,7 @@ const UserModel: UserModelType = {
 
   state: {
     currentUser: {},
-    permList: [],
+    premTree: {},
   },
 
   effects: {
@@ -50,10 +51,10 @@ const UserModel: UserModelType = {
 
   reducers: {
     saveCurrentUser(state, action) {
-      const { permList, ...user } = action.payload;
+      const { premTree, ...user } = action.payload;
       return {
         ...state,
-        permList: permList || [],
+        premTree: premTree || {},
         currentUser: user || {},
       };
     },

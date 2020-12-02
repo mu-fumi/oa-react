@@ -13,6 +13,14 @@ async function getFakeCaptcha(req: Request, res: Response) {
   return res.json('captcha-xxx');
 }
 
+const premTree = {
+  project: {
+    main: true,
+    list: false,
+    edit: true,
+  },
+};
+
 // 代码中会兼容本地 service mock 以及部署站点的静态数据
 export default {
   // 支持值为 Object 和 Array
@@ -46,7 +54,7 @@ export default {
         remind_renew: '',
       },
       managers_name: '',
-      permList: ['bbb'],
+      premTree,
     },
   },
   'POST /api/login/account': async (req: Request, res: Response) => {
