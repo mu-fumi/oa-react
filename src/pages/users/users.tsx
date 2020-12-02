@@ -2,7 +2,6 @@ import React from 'react';
 import { Button, DatePicker, ConfigProvider, message } from 'antd';
 import zhCN from 'antd/es/locale/zh_CN';
 
-import logo from './../assets/logo.png';
 import {
   HomeOutlined,
   SettingFilled,
@@ -36,8 +35,6 @@ export default () => {
         <SyncOutlined spin />
         <SmileOutlined rotate={180} />
         <LoadingOutlined />
-
-        <img src={logo} alt="" />
 
         <Button type="link">Link Button</Button>
         <DatePicker></DatePicker>
