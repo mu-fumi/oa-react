@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { history } from 'umi';
 import { Row, Col, Form, Tabs, Alert, Input, Button } from 'antd';
 import './login.less';
-import iu from './iu.png';
-import pd from './pd.png';
-import lbg from './lbg.png';
+import iu from './img/iu.png';
+import pd from './img/pd.png';
+import lbg from './img/lbg.png';
 import request from '@/utils/request';
 import { ls } from '@/utils/utils';
 
@@ -21,7 +21,6 @@ export default function login() {
   const [err, setErr] = useState(false);
 
   const onFinish = (values: LoginType) => {
-    console.log('values -> :', values);
     request('/user/admin_login', {
       method: 'POST',
       data: values,
@@ -31,7 +30,6 @@ export default function login() {
   };
 
   const loginSuccess = (res: any) => {
-    console.log('res -> :', res)
     ls.set('token', res.result.token);
     ls.set('user', res.result.user);
     history.push('/');

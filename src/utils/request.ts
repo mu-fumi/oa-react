@@ -8,6 +8,9 @@ import axios, {
 import { history } from 'umi';
 import { message as messageBox } from 'antd';
 import { stringify } from 'querystring';
+import qs from 'qs'
+import { ls } from '@/utils/utils'
+
 
 interface HztlAxiosRequestConfig extends AxiosRequestConfig {
     ignoreErr?: boolean; // 后端报错单独处理
@@ -88,14 +91,23 @@ const request: HztlAxiosInstance = axios.create({
 });
 
 request.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
+const whiteUrl: string[] = ['/user/admin_login']
+
 
 request.interceptors.request.use(
     (config: HztlAxiosRequestConfig) => {
-        return {
+        var token: string = ls.get('token')
+        if (config.method === 'post') {
+            config.data = qs.stringify(config.data)
+        }
+        if (!whiteUrl.includes(config.url!)) {
+            config.headers['token'] = token
+        }
+        return ({
             ...config,
             url: config.url,
             baseURL: process.env.APP_API_BASE_URL + '/v1',
-        };
+        });
     },
     error => {
         return Promise.reject(error);
