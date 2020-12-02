@@ -1,4 +1,4 @@
-import { MenuDataItem } from '@ant-design/pro-layout';
+import { MenuDataItem, Settings as ProSettings } from '@ant-design/pro-layout';
 import { UserModelState } from './user';
 import { StateType } from './login';
 
@@ -19,6 +19,7 @@ export interface Loading {
 export interface ConnectState {
   loading: Loading;
   user: UserModelState;
+  settings: ProSettings;
   login: StateType;
 }
 
