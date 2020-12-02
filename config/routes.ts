@@ -2,6 +2,16 @@ import { IRoute } from 'umi';
 
 export const routes: IRoute[] = [
   {
+    path: '/users',
+    component: '@/layouts/UserLayout',
+    routes: [
+      {
+        path: '/users',
+        component: '@/pages/index/index',
+      },
+    ],
+  },
+  {
     path: '/',
     component: '@/layouts/SecurityLayout',
     routes: [
@@ -26,16 +36,6 @@ export const routes: IRoute[] = [
       },
       {
         component: './404',
-      },
-    ],
-  },
-  {
-    path: '/users',
-    component: '@/layouts/UserLayout',
-    routes: [
-      {
-        path: '/users',
-        component: '@/pages/index/index',
       },
     ],
   },
