@@ -56,7 +56,7 @@ export default function login() {
   const loginSuccess = (res: any) => {
     ls.set('token', res.result.token);
     ls.set('user', res.result.user);
-    // history.push('/');
+    history.push('/');
     setErr(false);
   };
   const requestFailed = (err: any) => {
