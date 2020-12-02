@@ -12,7 +12,7 @@ import {
   StepForwardOutlined,
 } from '@ant-design/icons';
 
-import Line from './Line.jsx';
+import Line from './Line';
 
 console.log('11 -> :', 11);
 

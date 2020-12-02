@@ -11,6 +11,14 @@ if (IS_PROD) {
 }
 
 export default defineConfig({
+  antd: {},
+  dva: {
+    hmr: true,
+  },
+  locale: false,
+  dynamicImport: {
+    loading: '@/components/PageLoading',
+  },
   extraBabelPlugins: plugins,
   nodeModulesTransform: {
     type: 'none',
