@@ -1,21 +1,11 @@
-/**
- * Ant Design Pro v4 use `@ant-design/pro-layout` to handle Layout.
- * You can view component api by:
- * https://github.com/ant-design/ant-design-pro-layout
- */
-import {
-  MenuDataItem,
-  BasicLayoutProps as ProLayoutProps,
-  Settings,
-  getMenuData,
-} from '@ant-design/pro-layout';
-import React, { useEffect, useMemo, useRef, useCallback } from 'react';
-import { Link, connect, Dispatch } from 'umi';
+import { getMenuData } from '@ant-design/pro-layout';
+import React, { useMemo, useCallback } from 'react';
+import { Link, connect, Dispatch, IRoute } from 'umi';
 import { Result, Button } from 'antd';
 import Authorized from '@/components/Authorized';
 import { ConnectState } from '@/models/connect';
 import { getMatchMenu } from '@umijs/route-utils';
-import { IPremList } from '@/models/user';
+import { IPremTree } from '@/models/user';
 
 const noMatch = (
   <Result
@@ -30,12 +20,9 @@ const noMatch = (
   />
 );
 export interface BasicLayoutProps {
-  permList: IPremList;
+  premTree: IPremTree;
   location: Location;
-  route: ProLayoutProps['route'] & {
-    authority: string[];
-  };
-  settings: Settings;
+  route: IRoute;
   dispatch: Dispatch;
 }
 /**
@@ -46,48 +33,34 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
   const {
     children,
     route,
-    permList,
+    premTree,
     location = {
       pathname: '/',
     },
   } = props;
 
+  // get menuData
+  const menuData = useMemo(() => {
+    const current = getMenuData(route?.routes || []);
+    return current.menuData;
+  }, [location.pathname]);
+
   // get children authority
   const authorized = useMemo(() => {
-    const current = getMenuData(route?.routes || []);
-    console.log('current', current.menuData);
     return (
-      getMatchMenu(location.pathname || '/', current.menuData).pop() || {
+      getMatchMenu(location.pathname || '/', menuData).pop() || {
         perm: undefined,
       }
     );
-  }, [location.pathname]);
-  console.log('authorized', authorized);
-
-  const menuDataRender = useCallback(
-    (menuList: MenuDataItem[]): MenuDataItem[] =>
-      menuList.map(item => {
-        const localItem = {
-          ...item,
-          children: item.children ? menuDataRender(item.children) : undefined,
-        };
-        return Authorized.checkPermRender(
-          item.perm,
-          permList,
-          localItem,
-          null,
-        ) as MenuDataItem;
-      }),
-    [permList],
-  );
+  }, [menuData]);
 
   return (
-    <Authorized perm={authorized.perm} permList={permList} noMatch={noMatch}>
+    <Authorized perm={authorized.perm} premTree={premTree} noMatch={noMatch}>
       {children}
     </Authorized>
   );
 };
 
 export default connect(({ user }: ConnectState) => ({
-  permList: user.permList,
+  premTree: user.premTree,
 }))(BasicLayout);
