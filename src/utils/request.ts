@@ -132,7 +132,7 @@ request.interceptors.response.use(
                 });
             }
         } else if (!ignoreErr) {
-            messageBox.warning(res.data);
+            messageBox.warning(res.data.msg);
         }
         return Promise.reject(res.data);
     },

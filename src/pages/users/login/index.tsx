@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { history } from 'umi';
-import { Row, Col, Form, Tabs, Alert, Input, Button } from 'antd';
+import { Row, Col, Form, Tabs, Alert, Input, Button, Message } from 'antd';
+import { MailOutlined } from '@ant-design/icons';
 import './login.less';
 import iu from './img/iu.png';
 import pd from './img/pd.png';
@@ -11,28 +12,51 @@ import { ls } from '@/utils/utils';
 export interface LoginType {
   mobile: string;
   type: string;
+  login_type: string;
   password?: string;
-  code?: string;
+  sms_code?: string;
 }
 
 const { TabPane } = Tabs;
 
 export default function login() {
   const [err, setErr] = useState(false);
+  const myForm: any = useRef<any>();
+  const [tabKey, setTabKey] = useState('password');
 
-  const onFinish = (values: LoginType) => {
-    request('/user/admin_login', {
-      method: 'POST',
-      data: values,
-    })
-      .then(res => loginSuccess(res))
-      .catch(err => requestFailed(err));
+  const [state, setState] = useState({
+    time: 60,
+    loginBtn: false,
+    smsSendBtn: false,
+  });
+
+  const onFinish = () => {
+    var vaKeys =
+      tabKey === 'password' ? ['mobile', 'password'] : ['mobile', 'sms_code'];
+    myForm.current
+      .validateFields(vaKeys)
+      .then((values: LoginType) => {
+        values.login_type = tabKey;
+        request('/user/admin_login', {
+          method: 'POST',
+          data: values,
+          ignoreAllErr: true,
+        })
+          .then(res => loginSuccess(res))
+          .catch(err => requestFailed(err));
+      })
+      .catch((errorInfo: any) => {
+        console.log('errorInfo -> :', errorInfo);
+      });
+  };
+  const changeTabs = (key: string) => {
+    setTabKey(key);
   };
 
   const loginSuccess = (res: any) => {
     ls.set('token', res.result.token);
     ls.set('user', res.result.user);
-    history.push('/');
+    // history.push('/');
     setErr(false);
   };
   const requestFailed = (err: any) => {
@@ -41,6 +65,47 @@ export default function login() {
   };
 
   const onFinishFailed = (errorInfo: any) => {};
+
+  const getCaptcha = () => {
+    var newData = { ...state };
+
+    myForm.current
+      .validateFields(['mobile'])
+      .then((values: any) => {
+        newData.smsSendBtn = true;
+        setState(newData);
+
+        const interval = window.setInterval(() => {
+          if (newData.time-- <= 0) {
+            newData.time = 60;
+            newData.smsSendBtn = false;
+            window.clearInterval(interval);
+          }
+          setState({ ...newData });
+        }, 1000);
+
+        const hide = Message.loading('验证码发送中..', 0);
+
+        request('/send_login_sms', {
+          method: 'GET',
+          params: values,
+        })
+          .then(res => {
+            setTimeout(hide, 2500);
+          })
+          .catch(err => {
+            console.log('err -> :', err);
+            setTimeout(hide, 1);
+            clearInterval(interval);
+            state.time = 60;
+            state.smsSendBtn = false;
+            setState({ ...newData });
+          });
+      })
+      .catch((errorInfo: any) => {
+        console.log('errorInfo -> :', errorInfo);
+      });
+  };
 
   return (
     <div className="main">
@@ -59,11 +124,10 @@ export default function login() {
             id="formLogin"
             className="user-layout-login"
             name="formLogin"
-            onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
+            ref={myForm}
           >
-            <Tabs>
-              <TabPane key="tab1" tab="账号密码登录">
+            <Tabs onChange={changeTabs}>
+              <TabPane key="password" tab="账号密码登录">
                 {err && (
                   <Alert
                     style={{ marginBottom: '24px' }}
@@ -109,7 +173,7 @@ export default function login() {
                 </Form.Item>
               </TabPane>
 
-              <TabPane key="tab2" tab="手机号登录">
+              <TabPane key="sms" tab="手机号登录">
                 <Form.Item
                   name="mobile"
                   rules={[
@@ -131,7 +195,7 @@ export default function login() {
                 <Row gutter={16}>
                   <Col className="gutter-row" span={16}>
                     <Form.Item
-                      name="mobile"
+                      name="sms_code"
                       rules={[
                         {
                           required: true,
@@ -141,13 +205,20 @@ export default function login() {
                     >
                       <Input
                         size="large"
-                        prefix={<img src={iu} width="16px" />}
+                        prefix={<MailOutlined width="16px" />}
                         placeholder="请输入验证码"
                       />
                     </Form.Item>
                   </Col>
                   <Col className="gutter-row" span={8}>
-                    <Button type="primary">获取验证码</Button>
+                    <Button
+                      type="primary"
+                      size="large"
+                      disabled={state.smsSendBtn}
+                      onClick={getCaptcha}
+                    >
+                      {state.smsSendBtn ? state.time + ' s' : '获取验证码'}
+                    </Button>
                   </Col>
                 </Row>
               </TabPane>
@@ -157,8 +228,9 @@ export default function login() {
               <Button
                 size="large"
                 type="primary"
-                htmlType="submit"
+                htmlType="button"
                 className="login-button"
+                onClick={onFinish}
               >
                 登录
               </Button>
