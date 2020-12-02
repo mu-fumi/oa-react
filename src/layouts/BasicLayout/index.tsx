@@ -2,20 +2,18 @@ import ProLayout, {
   getMenuData,
   MenuDataItem,
   BasicLayoutProps as ProLayoutProps,
-  DefaultFooter,
   Settings,
 } from '@ant-design/pro-layout';
 import RightContent from '@/components/GlobalHeader/RightContent';
 import React, { useMemo, useCallback } from 'react';
-import { Link, connect, Dispatch, IRoute } from 'umi';
+import { Link, connect, Dispatch } from 'umi';
 import { Result, Button } from 'antd';
 import Authorized from '@/components/Authorized';
 import { ConnectState } from '@/models/connect';
 import { getMatchMenu } from '@umijs/route-utils';
 import { IPremTree } from '@/models/user';
 import { checkPrem } from '@/utils/checkPerm';
-import Header from './Header';
-import logo from './logo.png';
+import style from './index.less';
 
 const noMatch = (
   <Result
@@ -78,7 +76,8 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
 
   return (
     <ProLayout
-      logo={logo}
+      className={style.mainLayout}
+      logo={null}
       menuDataRender={menuDataRender}
       menuItemRender={(menuItemProps, defaultDom) => {
         if (menuItemProps.isUrl || !menuItemProps.path) {

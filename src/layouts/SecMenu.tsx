@@ -49,7 +49,7 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
           <Menu.Item key={item.path}>{item.name}</Menu.Item>
         ))}
       </Menu>
-      <div>{children}</div>
+      <div className="main-content">{children}</div>
     </>
   );
 };
