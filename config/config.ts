@@ -1,6 +1,13 @@
 import { defineConfig } from 'umi';
 import { routes } from './routes';
 
+const IS_PROD = ['production', 'prod'].includes(process.env.NODE_ENV)
+
+const plugins: string[] = [];
+if (IS_PROD) {
+    plugins.push('transform-remove-console')
+}
+
 export default defineConfig({
     define: {
         'process.env.NODE_ENV': 'development',
@@ -14,7 +21,7 @@ export default defineConfig({
     dynamicImport: {
         loading: '@/components/PageLoading',
     },
-    extraBabelPlugins: [],
+    extraBabelPlugins: plugins,
     nodeModulesTransform: {
         type: 'none',
     },
