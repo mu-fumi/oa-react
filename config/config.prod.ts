@@ -1,10 +1,14 @@
+
 import { defineConfig } from 'umi';
 import { routes } from './routes';
 
+
+const plugins = ['transform-remove-console'];
+
 export default defineConfig({
     define: {
-        'process.env.NODE_ENV': 'development',
-        'process.env.APP_API_BASE_URL': '/api'
+        'process.env.NODE_ENV': 'production',
+        'process.env.APP_API_BASE_URL': 'http://118.24.46.73'
     },
     antd: {},
     dva: {
@@ -14,7 +18,7 @@ export default defineConfig({
     dynamicImport: {
         loading: '@/components/PageLoading',
     },
-    extraBabelPlugins: [],
+    extraBabelPlugins: plugins,
     nodeModulesTransform: {
         type: 'none',
     },
@@ -38,17 +42,6 @@ export default defineConfig({
         '//cdn.jsdelivr.net/npm/echarts@4.9.0/dist/echarts.min.js',
     ],
 
-    proxy: {
-        '/api': {
-            target: 'http://148.70.247.229:9501',
-            // target: 'http://118.24.47.141',
-            changeOrigin: true,
-            pathRewrite: {
-                '^/api': '',
-            },
-        },
-    },
-
     chainWebpack(config, { env, webpack, createCSSRule }) {
         config.module
             .rule('images')
@@ -68,3 +61,4 @@ export default defineConfig({
             .end();
     },
 });
+

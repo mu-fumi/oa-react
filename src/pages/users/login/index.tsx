@@ -1,20 +1,48 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { history } from 'umi';
 import { Row, Col, Form, Tabs, Alert, Input, Button } from 'antd';
 import './login.less';
 import iu from './iu.png';
 import pd from './pd.png';
 import lbg from './lbg.png';
+import request from '@/utils/request';
+import { ls } from '@/utils/utils';
+
+export interface LoginType {
+  mobile: string;
+  type: string;
+  password?: string;
+  code?: string;
+}
 
 const { TabPane } = Tabs;
 
 export default function login() {
-  const onFinish = (values: any) => {
-    console.log('Success:', values);
+  const [err, setErr] = useState(false);
+
+  const onFinish = (values: LoginType) => {
+    console.log('values -> :', values);
+    request('/user/admin_login', {
+      method: 'POST',
+      data: values,
+    })
+      .then(res => loginSuccess(res))
+      .catch(err => requestFailed(err));
   };
 
-  const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
+  const loginSuccess = (res: any) => {
+    console.log('res -> :', res)
+    ls.set('token', res.result.token);
+    ls.set('user', res.result.user);
+    history.push('/');
+    setErr(false);
   };
+  const requestFailed = (err: any) => {
+    console.log('err -> :', err);
+    setErr(true);
+  };
+
+  const onFinishFailed = (errorInfo: any) => {};
 
   return (
     <div className="main">
@@ -36,43 +64,92 @@ export default function login() {
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
           >
-            <Tabs tabBarStyle={{ textAlign: 'center', borderBottom: 'unset' }}>
+            <Tabs>
               <TabPane key="tab1" tab="账号密码登录">
-                <Alert
-                  style={{ marginBottom: '24px' }}
-                  type="error"
-                  showIcon
-                  message="账户或密码错误"
-                />
+                {err && (
+                  <Alert
+                    style={{ marginBottom: '24px' }}
+                    type="error"
+                    showIcon
+                    message="账户或密码错误"
+                  />
+                )}
 
-                <Form.Item>
-                  <Input />
+                <Form.Item
+                  name="mobile"
+                  rules={[
+                    {
+                      required: true,
+                      pattern: /^1[3456789]\d{9}$/,
+                      validateTrigger: 'change',
+                      message: '请输入正确的手机号',
+                    },
+                  ]}
+                >
+                  <Input
+                    size="large"
+                    prefix={<img src={iu} width="16px" />}
+                    placeholder="请输入手机号"
+                  />
                 </Form.Item>
 
-                <Form.Item>
-                  <Input.Password />
+                <Form.Item
+                  name="password"
+                  rules={[
+                    {
+                      required: true,
+                      message: '请输入密码',
+                      validateTrigger: 'blur',
+                    },
+                  ]}
+                >
+                  <Input.Password
+                    size="large"
+                    prefix={<img src={pd} width="16px" />}
+                    placeholder="请输入密码"
+                  />
                 </Form.Item>
               </TabPane>
 
               <TabPane key="tab2" tab="手机号登录">
-                <Form.Item>
-                  <Input />
+                <Form.Item
+                  name="mobile"
+                  rules={[
+                    {
+                      required: true,
+                      pattern: /^1[3456789]\d{9}$/,
+                      validateTrigger: 'change',
+                      message: '请输入正确的手机号',
+                    },
+                  ]}
+                >
+                  <Input
+                    size="large"
+                    prefix={<img src={iu} width="16px" />}
+                    placeholder="请输入手机号"
+                  />
                 </Form.Item>
 
                 <Row gutter={16}>
                   <Col className="gutter-row" span={16}>
-                    <Form.Item>
-                      <Input />
+                    <Form.Item
+                      name="mobile"
+                      rules={[
+                        {
+                          required: true,
+                          message: '请输入验证码',
+                        },
+                      ]}
+                    >
+                      <Input
+                        size="large"
+                        prefix={<img src={iu} width="16px" />}
+                        placeholder="请输入验证码"
+                      />
                     </Form.Item>
                   </Col>
                   <Col className="gutter-row" span={8}>
-                    <Button
-                      type="primary"
-                      htmlType="submit"
-                      className="getCaptcha"
-                    >
-                      Submit
-                    </Button>
+                    <Button type="primary">获取验证码</Button>
                   </Col>
                 </Row>
               </TabPane>

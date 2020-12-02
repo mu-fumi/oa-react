@@ -5,6 +5,8 @@ import { stringify } from 'querystring';
 import { ConnectState } from '@/models/connect';
 import { CurrentUser } from '@/models/user';
 
+var e = process.env.APP_API_BASE_URL;
+console.log('e -> :', e);
 interface SecurityLayoutProps extends ConnectProps {
   loading?: boolean;
   currentUser?: CurrentUser;
