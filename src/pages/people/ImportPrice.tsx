@@ -41,12 +41,12 @@ export default function ImportPeople() {
   return (
     <div className="white">
       <Card
-        title="人员信息 导入步骤："
+        title="成本信息 导入步骤："
         bordered={false}
         extra={
           <Upload
             name="file"
-            action={upUrl + '/user/import'}
+            action={upUrl + '/user/import_salary'}
             headers={headers}
             showUploadList={false}
             onChange={handleChange}
@@ -60,13 +60,13 @@ export default function ImportPeople() {
         <p>
           1、下载导入模板。
           <a
-            href="http://file.xinhong.site/peoples.xlsx"
-            download="人员信息表导入模板.xlsx"
+            href="http://file.xinhong.site/price.xlsx"
+            download="成本导入模板.xlsx"
           >
             （点击下载）
           </a>
         </p>
-        <p>2、按照导入模板的要求，添加人员信息数据。</p>
+        <p>2、按照导入模板的要求，添加成本信息。</p>
         <p>3、点击“导入”按钮，开始导入。</p>
         <p>可在下框中查看导入失败的数据。</p>
       </Card>

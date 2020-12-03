@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, Upload, Button, message } from 'antd';
 
-export default function ImportPeople() {
+export default function ImportDept() {
   const [loading, setLoading] = useState(false);
   const [errinfo, setErrinfo] = useState(false);
   const [errArr, setErrArr] = useState([]);
@@ -41,7 +41,7 @@ export default function ImportPeople() {
   return (
     <div className="white">
       <Card
-        title="人员信息 导入步骤："
+        title="组织信息 导入步骤："
         bordered={false}
         extra={
           <Upload
@@ -61,12 +61,12 @@ export default function ImportPeople() {
           1、下载导入模板。
           <a
             href="http://file.xinhong.site/peoples.xlsx"
-            download="人员信息表导入模板.xlsx"
+            download="组织信息导入模板.xlsx"
           >
             （点击下载）
           </a>
         </p>
-        <p>2、按照导入模板的要求，添加人员信息数据。</p>
+        <p>2、按照导入模板的要求，添加组织信息。</p>
         <p>3、点击“导入”按钮，开始导入。</p>
         <p>可在下框中查看导入失败的数据。</p>
       </Card>

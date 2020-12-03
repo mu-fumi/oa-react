@@ -57,7 +57,11 @@ export const ss = {
  * @param {*} id    顶级id
  * @param {*} link  关联的字段名字  pid 。。。
  */
-export function nest(items: any[], id = null, link = 'parent_id'): any {
+export function nest(
+  items: any[],
+  id: string | number,
+  link = 'parent_id',
+): any {
   return items
     .filter(item => item[link] === id)
     .map(item => ({ ...item, children: nest(items, item.dept_id, link) }));

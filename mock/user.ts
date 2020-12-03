@@ -19,11 +19,12 @@ const premTree = {
     list: true,
     edit: true,
     add: true,
+    order: true,
   },
   admin: {
-    main: false,
-    list: true,
-    edit: true,
+    people: true,
+    organize: true,
+    company: true,
   },
 };
 
