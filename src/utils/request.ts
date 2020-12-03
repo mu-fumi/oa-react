@@ -1,68 +1,9 @@
-import axios, {
-  AxiosRequestConfig,
-  AxiosResponse,
-  AxiosInstance,
-  AxiosPromise,
-  AxiosInterceptorManager,
-} from 'axios';
+import axios from 'axios';
 import { history } from 'umi';
 import { message as messageBox } from 'antd';
 import { stringify } from 'querystring';
 import qs from 'qs';
 import { ls } from '@/utils/utils';
-
-interface HztlAxiosRequestConfig extends AxiosRequestConfig {
-  ignoreErr?: boolean; // 后端报错单独处理
-  ignoreAllErr?: boolean; // 屏蔽所有错误
-}
-
-interface HztlAxiosResponse<T = any> extends AxiosResponse<T> {
-  config: HztlAxiosRequestConfig;
-}
-
-interface HztlAxiosInstance extends AxiosInstance {
-  (config: HztlAxiosRequestConfig): AxiosPromise;
-  (url: string, config?: HztlAxiosRequestConfig): AxiosPromise;
-  interceptors: {
-    request: AxiosInterceptorManager<HztlAxiosRequestConfig>;
-    response: AxiosInterceptorManager<HztlAxiosResponse>;
-  };
-  getUri(config?: HztlAxiosRequestConfig): string;
-  request<T = any, R = HztlAxiosResponse<T>>(
-    config: HztlAxiosRequestConfig,
-  ): Promise<R>;
-  get<T = any, R = HztlAxiosResponse<T>>(
-    url: string,
-    config?: HztlAxiosRequestConfig,
-  ): Promise<R>;
-  delete<T = any, R = HztlAxiosResponse<T>>(
-    url: string,
-    config?: HztlAxiosRequestConfig,
-  ): Promise<R>;
-  head<T = any, R = HztlAxiosResponse<T>>(
-    url: string,
-    config?: HztlAxiosRequestConfig,
-  ): Promise<R>;
-  options<T = any, R = HztlAxiosResponse<T>>(
-    url: string,
-    config?: HztlAxiosRequestConfig,
-  ): Promise<R>;
-  post<T = any, R = HztlAxiosResponse<T>>(
-    url: string,
-    data?: any,
-    config?: HztlAxiosRequestConfig,
-  ): Promise<R>;
-  put<T = any, R = HztlAxiosResponse<T>>(
-    url: string,
-    data?: any,
-    config?: HztlAxiosRequestConfig,
-  ): Promise<R>;
-  patch<T = any, R = HztlAxiosResponse<T>>(
-    url: string,
-    data?: any,
-    config?: HztlAxiosRequestConfig,
-  ): Promise<R>;
-}
 
 const codeMessage: { [propName: number]: string } = {
   200: '服务器成功返回请求的数据。',
@@ -82,7 +23,7 @@ const codeMessage: { [propName: number]: string } = {
   504: '网关超时。',
 };
 
-const request: HztlAxiosInstance = axios.create({
+const request = axios.create({
   withCredentials: true,
   timeout: 6000, // 请求超时时间
 });
@@ -92,7 +33,7 @@ request.defaults.headers.post['Content-Type'] =
 const whiteUrl: string[] = ['/user/admin_login'];
 
 request.interceptors.request.use(
-  (config: HztlAxiosRequestConfig) => {
+  config => {
     var token: string = ls.get('token');
     if (config.method === 'post') {
       config.data = qs.stringify(config.data);
@@ -112,37 +53,37 @@ request.interceptors.request.use(
 );
 
 request.interceptors.response.use(
-    res => {
-        const { data, config } = res;
-        const { ignoreErr, ignoreAllErr } = config;
-        const { code } = data;
-        if (code == 200) {
-            return Promise.resolve(res.data);
-        }
-        if (code === 401) {
-            if (!ignoreAllErr) {
-                history.replace({
-                    pathname: '/user',
-                    search: stringify({
-                        redirect: window.location.href,
-                    }),
-                });
-            }
-        } else if (!ignoreErr) {
-            messageBox.warning(res.data.msg);
-        }
-        return Promise.reject(res.data);
-    },
-    error => {
-        const { response } = error;
-        if (response && response.status) {
-            const { status } = response;
-            messageBox.error(`${codeMessage[status]} 请求错误 ${status}`);
-        } else if (!response) {
-            messageBox.error('网络异常，无法连接服务器');
-        }
-        return Promise.reject(response);
-    },
+  res => {
+    const { data, config } = res;
+    const { ignoreErr, ignoreAllErr } = config;
+    const { code } = data;
+    if (code == 200) {
+      return Promise.resolve(data);
+    }
+    if (code === 401) {
+      if (!ignoreAllErr) {
+        history.replace({
+          pathname: '/user',
+          search: stringify({
+            redirect: window.location.href,
+          }),
+        });
+      }
+    } else if (!ignoreErr) {
+      messageBox.warning(data.msg);
+    }
+    return Promise.reject(data);
+  },
+  error => {
+    const { response } = error;
+    if (response && response.status) {
+      const { status } = response;
+      messageBox.error(`${codeMessage[status]} 请求错误 ${status}`);
+    } else if (!response) {
+      messageBox.error('网络异常，无法连接服务器');
+    }
+    return Promise.reject(response);
+  },
 );
 
 export default request;
