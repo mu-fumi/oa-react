@@ -1,4 +1,4 @@
-import { PageRequestRes } from '@/interface';
+import { PageRequestRes, RequestRes } from '@/interface';
 import request from '@/utils/request';
 
 interface ISearchUsersParams {
@@ -29,15 +29,17 @@ export interface ISearchedUser {
   username: string;
 }
 
-export interface ISearchUsersRes extends PageRequestRes<ISearchedUser> {}
-
-export async function searchUsers(params: ISearchUsersParams): Promise<any> {
+export async function searchUsers(
+  params: ISearchUsersParams,
+): Promise<PageRequestRes<ISearchedUser>> {
   return request('/user/list_paging', {
     params,
   });
 }
 
-export async function loadUsers(list: number[]): Promise<any> {
+export async function loadUsers(
+  list: number[],
+): Promise<RequestRes<ISearchedUser[]>> {
   return request('/user/listSearch', {
     params: {
       list,

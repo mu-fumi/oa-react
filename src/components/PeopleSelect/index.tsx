@@ -3,12 +3,7 @@ import { Select, Divider } from 'antd';
 import { SelectProps, SelectValue } from 'antd/lib/select';
 import { OptionData } from 'rc-select/lib/interface';
 import { uniqBy } from 'lodash';
-import {
-  ISearchedUser,
-  ISearchUsersRes,
-  loadUsers,
-  searchUsers,
-} from '@/services/search';
+import { ISearchedUser, loadUsers, searchUsers } from '@/services/search';
 
 interface PeopleSelectProps<VT> extends SelectProps<VT> {
   unFilterUsers?: number[];
@@ -40,7 +35,7 @@ export default class PeopleSelect<
     const { value } = this.props;
     if (Array.isArray(value) && !this.hasLoadedDeftault && value.length) {
       this.hasLoadedDeftault = true;
-      loadUsers(value as number[]).then((res: { result: ISearchedUser[] }) => {
+      loadUsers(value as number[]).then(res => {
         this.changeOptions(res.result);
       });
     }
@@ -67,7 +62,7 @@ export default class PeopleSelect<
       keywords: this.keywords,
       un_filter_user: unFilterUsers,
       all_user: allUser ? 1 : 0,
-    }).then((res: ISearchUsersRes) => {
+    }).then(res => {
       return res.result.data;
     });
   };
@@ -144,7 +139,7 @@ const PeopleSelect2: React.FC<PeopleSelectProps<SelectValue>> = props => {
   useEffect(() => {
     if (Array.isArray(value) && !hasLoadedDeftault && value.length) {
       hasLoadedDeftault = true;
-      loadUsers(value as number[]).then((res: { result: ISearchedUser[] }) => {
+      loadUsers(value as number[]).then(res => {
         changeOptions(res.result);
       });
     }
@@ -155,7 +150,7 @@ const PeopleSelect2: React.FC<PeopleSelectProps<SelectValue>> = props => {
       ...params,
       un_filter_user: unFilterUsers,
       all_user: allUser ? 1 : 0,
-    }).then((res: ISearchUsersRes) => {
+    }).then(res => {
       return res.result.data;
     });
   };
