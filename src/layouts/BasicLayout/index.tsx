@@ -44,10 +44,7 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
   const { children, route, premTree, location, settings } = props;
 
   const current = getMenuData(route?.routes || []);
-  const menuData = current.menuData.filter(
-    item =>
-      checkPrem(item.perm, premTree) && !item.hideInMenu && !item.redirect,
-  );
+  const menuData = current.menuData;
 
   // get children authority
   const authorized = useMemo(() => {
@@ -75,6 +72,9 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
 
   const menuDataRender = useCallback(
     (menuList: MenuDataItem[]): MenuDataItem[] => {
+      if (authorized.onlyLogo) {
+        return [];
+      }
       return menuList.map(item => {
         const localItem = {
           ...item,
@@ -86,7 +86,7 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
           : null) as MenuDataItem;
       });
     },
-    [premTree],
+    [premTree, authorized],
   );
 
   return (
@@ -100,7 +100,9 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
         }
         return <Link to={menuItemProps.path}>{defaultDom}</Link>;
       }}
-      rightContentRender={() => <RightContent />}
+      rightContentRender={() => {
+        return !authorized.onlyLogo ? <RightContent /> : null;
+      }}
       {...props}
       {...settings}
     >

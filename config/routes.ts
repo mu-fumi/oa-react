@@ -121,12 +121,12 @@ export const routes: IRoute[] = [
             path: '/import',
             component: '@/layouts/BlankLayout',
             redirect: '/import/people',
-            children: [
+            routes: [
               {
-                path: '/import/people',
+                path: 'people',
                 name: 'ImportPeople',
                 hideInMenu: true,
-                noAvater: true,
+                onlyLogo: true,
                 component: '@/pages/people/ImportPeople',
               },
               // {
