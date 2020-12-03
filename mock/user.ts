@@ -20,8 +20,8 @@ const premTree = {
     edit: true,
   },
   admin: {
-    main: true,
-    list: false,
+    main: false,
+    list: true,
     edit: true,
   },
 };

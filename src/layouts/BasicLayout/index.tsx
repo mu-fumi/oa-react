@@ -6,7 +6,7 @@ import ProLayout, {
 } from '@ant-design/pro-layout';
 import RightContent from '@/components/GlobalHeader/RightContent';
 import React, { useMemo, useCallback } from 'react';
-import { Link, connect, Dispatch } from 'umi';
+import { Link, connect, Dispatch, history } from 'umi';
 import { Result, Button } from 'antd';
 import Authorized from '@/components/Authorized';
 import { ConnectState } from '@/models/connect';
@@ -57,6 +57,21 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
       }
     );
   }, [menuData, location.pathname]);
+
+  /**
+   * 默认跳转路由处理
+   * 取已匹配路由
+   *  无子路由则正常，有子路由则跳转到子路由
+   *  无匹配路由则取顶级菜单跳转
+   */
+  const activeRouters = authorized.path ? authorized.children : menuData;
+  if (activeRouters?.length) {
+    const atctiveMatched = activeRouters?.filter(
+      item =>
+        checkPrem(item.perm, premTree) && !item.hideInMenu && !item.redirect,
+    )[0];
+    atctiveMatched?.path && history.push(atctiveMatched.path);
+  }
 
   const menuDataRender = useCallback(
     (menuList: MenuDataItem[]): MenuDataItem[] => {

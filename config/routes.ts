@@ -19,11 +19,6 @@ export const routes: IRoute[] = [
         path: '/',
         component: '@/layouts/BasicLayout',
         routes: [
-          // 默认跳转之后取消在登录之后再去判断有权限的页面跳转
-          {
-            path: '/',
-            redirect: '/project/main',
-          },
           {
             path: '/project',
             perm: 'project',

@@ -7,7 +7,7 @@ type DefaultSettings = Partial<ProSettings> & {
 const proSettings: DefaultSettings = {
   navTheme: 'dark',
   primaryColor: '#1890ff',
-  layout: 'topmenu',
+  layout: 'top',
   contentWidth: 'Fixed',
   fixedHeader: false,
   fixSiderbar: true,
