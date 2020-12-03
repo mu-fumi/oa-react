@@ -23,7 +23,6 @@ export interface UpdatePwdType {
 
 export default function UpdatePassWord(props: any) {
   const { visible, hideModal, currentUser } = props;
-  console.log('currentUser -> :', currentUser);
 
   const [form] = Form.useForm();
 
