@@ -29,23 +29,9 @@ export default function index() {
     setact(index);
     var o = { ...req };
     o.payment_status = status.payment_status;
-    setreq(o);
-    getList();
+    setreq({ ...o });
   };
 
-  let getList = () => {
-    request('/order/list', {
-      method: 'GET',
-      params: req,
-    }).then(res => {
-      console.log('res -> :', res);
-    });
-  };
-
-  useEffect(() => {
-    getList();
-    return () => {};
-  }, [req]);
 
   return (
     <>
