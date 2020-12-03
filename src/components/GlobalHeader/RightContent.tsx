@@ -15,7 +15,7 @@ const GlobalHeaderRight: React.SFC<GlobalHeaderRightProps> = props => {
   const { theme, layout } = props;
   let className = styles.right;
 
-  if (theme === 'dark' && layout === 'topmenu') {
+  if (theme === 'dark' && layout === 'top') {
     className = `${styles.right}  ${styles.dark}`;
   }
 

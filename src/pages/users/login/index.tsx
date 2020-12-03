@@ -61,7 +61,9 @@ export default function login() {
   };
   const requestFailed = (err: any) => {
     console.log('err -> :', err);
-    setErr(true);
+    if (tabKey === 'password') {
+      setErr(true);
+    };
   };
 
   const onFinishFailed = (errorInfo: any) => {};

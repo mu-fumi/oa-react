@@ -11,6 +11,7 @@ import { CurrentUser } from '@/models/user';
 import HeaderDropdown from '../HeaderDropdown';
 import UpdatePassWord from './UpdatePassWord';
 import styles from './index.less';
+import { ls } from '@/utils/utils';
 
 export interface GlobalHeaderRightProps extends Partial<ConnectProps> {
   currentUser?: CurrentUser;
@@ -43,14 +44,8 @@ class AvatarDropdown extends React.Component<GlobalHeaderRightProps> {
     const { key } = event;
 
     if (key === 'logout') {
-      const { dispatch } = this.props;
-
-      if (dispatch) {
-        dispatch({
-          type: 'login/logout',
-        });
-      }
-
+      ls.cl();
+      history.push(`/user`);
       return;
     }
     if (key === 'settings') {
