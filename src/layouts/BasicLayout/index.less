@@ -1,11 +1,38 @@
+@import '~antd/lib/style/themes/default.less';
+
 .mainLayout {
-  color: #000;
   :global {
+    .ant-layout-header {
+      height: 64px !important;
+      line-height: 64px !important;
+      background-color: @primary-color;
+    }
     .ant-pro-basicLayout-content {
       margin: 0;
-      .main-content {
-        margin: 24px;
+      .my-menu {
+        height: 64px;
+        line-height: 64px;
+        padding: 0;
+        min-width: 1200px;
+        width: 1200px;
+        max-width: 1800px;
+        position: relative;
+        margin: 0 auto;
       }
+
+      .main-content {
+        min-width: 1200px;
+        width: 1200px;
+        margin: 10px auto 0;
+      }
+    }
+
+    .ant-pro-top-nav-header-main {
+      padding: 0;
+      min-width: 1200px;
+      max-width: 1800px;
+      position: relative;
+      margin: 0 auto;
     }
   }
 }

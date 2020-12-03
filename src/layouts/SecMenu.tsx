@@ -8,6 +8,11 @@ import { MenuInfo } from 'rc-menu/lib/interface';
 import { IPremTree } from '@/models/user';
 import { checkPrem } from '@/utils/checkPerm';
 
+const style = {
+  background: '#fff',
+  height: '64px',
+  lineHeight: '64px',
+};
 export interface BasicLayoutProps {
   premTree: IPremTree;
   location: Location;
@@ -44,11 +49,18 @@ const BasicLayout: React.FC<BasicLayoutProps> = props => {
 
   return (
     <>
-      <Menu onClick={handleClick} mode="horizontal" selectedKeys={matchedPath}>
-        {menuData.map(item => (
-          <Menu.Item key={item.path}>{item.name}</Menu.Item>
-        ))}
-      </Menu>
+      <div style={style}>
+        <Menu
+          className="my-menu"
+          onClick={handleClick}
+          mode="horizontal"
+          selectedKeys={matchedPath}
+        >
+          {menuData.map(item => (
+            <Menu.Item key={item.path}>{item.name}</Menu.Item>
+          ))}
+        </Menu>
+      </div>
       <div className="main-content">{children}</div>
     </>
   );
