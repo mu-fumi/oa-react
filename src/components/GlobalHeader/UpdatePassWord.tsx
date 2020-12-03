@@ -38,7 +38,7 @@ export default function UpdatePassWord(props: any) {
           message.success(res.msg + '，请重新登陆');
           setTimeout(() => {
             ls.cl();
-            history.push('/users');
+            history.push('/user');
           }, 1400);
         });
       })

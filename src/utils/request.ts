@@ -122,7 +122,7 @@ request.interceptors.response.use(
         if (code === 401) {
             if (!ignoreAllErr) {
                 history.replace({
-                    pathname: '/user/login',
+                    pathname: '/user',
                     search: stringify({
                         redirect: window.location.href,
                     }),
