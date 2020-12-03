@@ -1,16 +1,76 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Button, Card } from 'antd';
+import {
+  Row,
+  Col,
+  Button,
+  Card,
+  Table,
+  Space,
+  Tag,
+  Pagination,
+  ConfigProvider,
+} from 'antd';
 import { ConnectProps, connect, Link, Dispatch } from 'umi';
 import { OrderListModelType } from './models/list';
+import zhCN from 'antd/lib/locale/zh_CN';
 
 import './list.less';
 interface SecurityLayoutProps extends ConnectProps {
   dispatch: Dispatch;
-  orderList: object;
+  orderList: any;
 }
 interface SecurityLayoutState {}
 
-function index(props: SecurityLayoutProps) {
+const columns = [
+  {
+    title: 'Name',
+    dataIndex: 'name',
+    key: 'name',
+    render: (text: any) => <a>{text}</a>,
+  },
+  {
+    title: 'Age',
+    dataIndex: 'age',
+    key: 'age',
+  },
+  {
+    title: 'Address',
+    dataIndex: 'address',
+    key: 'address',
+  },
+  {
+    title: 'Tags',
+    key: 'tags',
+    dataIndex: 'tags',
+    render: (tags: any) => (
+      <>
+        {tags.map((tag: any) => {
+          let color = tag.length > 5 ? 'geekblue' : 'green';
+          if (tag === 'loser') {
+            color = 'volcano';
+          }
+          return (
+            <Tag color={color} key={tag}>
+              {tag.toUpperCase()}
+            </Tag>
+          );
+        })}
+      </>
+    ),
+  },
+  {
+    title: 'Action',
+    key: 'action',
+    render: (text: any, record: any) => (
+      <Space size="middle">
+        <a>Invite {record.name}</a>
+        <a>Delete</a>
+      </Space>
+    ),
+  },
+];
+
+function index({ dispatch, orderList }: SecurityLayoutProps) {
   const [statusArr, setstatusArr] = useState([
     {
       payment_status: '',
@@ -22,27 +82,54 @@ function index(props: SecurityLayoutProps) {
     },
   ]);
   const [act, setact] = useState(0);
-  const [req, setreq] = useState({
+  const [req, setreq] = useState<any>({
     payment_status: '',
     order_name: '',
     order_type: '',
-    page: 1,
+    pageNo: 1,
     pageSize: 10,
+    totalCount: 0,
+    totalPage: 0,
   });
+
+  const [list, setList] = useState([]);
+
+  useEffect(() => {
+    dispatch({
+      type: 'orderList/fetchList',
+      payload: req,
+    });
+  }, []);
 
   const changeStatus = (status: any, index: number) => {
     setact(index);
-    var o = { ...req };
-    o.payment_status = status.payment_status;
-    setreq({ ...o });
-    props.dispatch({
+    var o = { ...req, payment_status: status.payment_status };
+    setreq(o);
+    dispatch({
       type: 'orderList/fetchList',
-      payload: req,
+      payload: o,
+    });
+  };
+
+  const pageChange = (pageNo: any, pageSize: any) => {
+    var o = { ...req, pageNo, pageSize };
+    setreq(o);
+    dispatch({
+      type: 'orderList/fetchList',
+      payload: o,
+    });
+  };
+  const sizeChange = (pageNo: any, pageSize: any) => {
+    var o = { ...req, pageNo, pageSize };
+    setreq(o);
+    dispatch({
+      type: 'orderList/fetchList',
+      payload: o,
     });
   };
 
   return (
-    <>
+    <ConfigProvider locale={zhCN}>
       <Row className="top-row">
         <Col span={12} className="top-left">
           <span className="bar"></span>
@@ -67,13 +154,26 @@ function index(props: SecurityLayoutProps) {
             </span>
           ))}
         </p>
-        <p>Card content</p>
-        <p>Card content</p>
+        <div>
+          <Table
+            columns={columns}
+            dataSource={orderList.data}
+            pagination={false}
+          />
+        </div>
+        <div style={{ textAlign: 'right', marginTop: '10px' }}>
+          <Pagination
+            onChange={pageChange}
+            onShowSizeChange={sizeChange}
+            defaultCurrent={orderList.pageNo}
+            total={orderList.totalCount}
+          />
+        </div>
       </Card>
-    </>
+    </ConfigProvider>
   );
 }
 
-export default connect(({ orderList }: { orderList: OrderListModelType }) => {
-  return orderList;
-})(index);
+export default connect(({ orderList }: { orderList: OrderListModelType }) => ({
+  orderList,
+}))(index);

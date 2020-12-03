@@ -7,14 +7,57 @@ export interface OrderListModelType {
   effects: {
     fetchList: Effect;
   };
+  reducers: {
+    changeList: Reducer;
+  };
   subscribe: object;
 }
 
 let getList = (req: any) => {
-  return request('/order/list', {
-    method: 'GET',
-    params: req,
-  })
+  return {
+    data:
+      req.payment_status === 0
+        ? [
+            {
+              key: '1',
+              name: 'John Brown',
+              age: 32,
+              address: 'New York No. 1 Lake Park',
+              tags: ['nice', 'developer'],
+            },
+            {
+              key: '2',
+              name: 'Jim Green',
+              age: 42,
+              address: 'London No. 1 Lake Park',
+              tags: ['loser'],
+            },
+            {
+              key: '3',
+              name: 'Joe Black',
+              age: 32,
+              address: 'Sidney No. 1 Lake Park',
+              tags: ['cool', 'teacher'],
+            },
+          ]
+        : [
+            {
+              key: '1',
+              name: 'John Brown',
+              age: 32,
+              address: 'New York No. 1 Lake Park',
+              tags: ['nice', 'developer'],
+            },
+          ],
+    pageNo: 1,
+    pageSize: 10,
+    totalCount: 60,
+    totalPage: 6,
+  };
+  //   request('/order/list', {
+  //     method: 'GET',
+  //     params: req,
+  //   });
 };
 
 const OrderListModel: OrderListModelType = {
@@ -27,16 +70,22 @@ const OrderListModel: OrderListModelType = {
     totalCount: 1,
     totalPage: 1,
   },
-  effects: {
-    *fetchList(_, { call, put }) {
-      const { result } = yield call(getList, _.payload);
-      console.log('result -> :', result);
-      //   yield put({
-      //     type: 'saveCurrentUser',
-      //     payload: result,
-      //   });
+  reducers: {
+    changeList(state, payload) {
+      var _state = { ...state, ...payload.data };
+      return _state;
     },
   },
+  effects: {
+    *fetchList(_, { call, put }) {
+      const result = yield call(getList, _.payload);
+      yield put({
+        type: 'changeList',
+        data: result,
+      });
+    },
+  },
+
   subscribe: {},
 };
 
