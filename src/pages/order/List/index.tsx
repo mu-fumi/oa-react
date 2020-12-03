@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, Button, Card } from 'antd';
-import { Link } from 'umi';
+import { ConnectProps, connect, Link, Dispatch } from 'umi';
+import { OrderListModelType } from './models/list';
 
 import './list.less';
-import request from '@/utils/request';
+interface SecurityLayoutProps extends ConnectProps {
+  dispatch: Dispatch;
+  orderList: object;
+}
+interface SecurityLayoutState {}
 
-export default function index() {
+function index(props: SecurityLayoutProps) {
   const [statusArr, setstatusArr] = useState([
     {
       payment_status: '',
@@ -30,8 +35,11 @@ export default function index() {
     var o = { ...req };
     o.payment_status = status.payment_status;
     setreq({ ...o });
+    props.dispatch({
+      type: 'orderList/fetchList',
+      payload: req,
+    });
   };
-
 
   return (
     <>
@@ -65,3 +73,7 @@ export default function index() {
     </>
   );
 }
+
+export default connect(({ orderList }: { orderList: OrderListModelType }) => {
+  return orderList;
+})(index);

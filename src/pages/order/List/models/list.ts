@@ -1,16 +1,23 @@
 import { Effect, Reducer } from 'umi';
 import request from '@/utils/request';
 
+export interface OrderListModelType {
+  namespace: string;
+  state: object;
+  effects: {
+    fetchList: Effect;
+  };
+  subscribe: object;
+}
+
 let getList = (req: any) => {
-  request('/order/list', {
+  return request('/order/list', {
     method: 'GET',
     params: req,
-  }).then(res => {
-    console.log('res -> :', res);
-  });
+  })
 };
 
-const OrderListModel = {
+const OrderListModel: OrderListModelType = {
   namespace: 'orderList',
 
   state: {
@@ -20,11 +27,16 @@ const OrderListModel = {
     totalCount: 1,
     totalPage: 1,
   },
-
-  effects: {},
-
-  reducers: {},
-
+  effects: {
+    *fetchList(_, { call, put }) {
+      const { result } = yield call(getList, _.payload);
+      console.log('result -> :', result);
+      //   yield put({
+      //     type: 'saveCurrentUser',
+      //     payload: result,
+      //   });
+    },
+  },
   subscribe: {},
 };
 
