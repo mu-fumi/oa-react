@@ -90,7 +90,7 @@ export const routes: IRoute[] = [
                     path: 'people',
                     perm: 'admin.people',
                     name: '员工',
-                    component: '@/pages/people/list',
+                    component: '@/pages/people/List',
                   },
                   {
                     path: 'organize',
