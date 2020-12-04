@@ -17,7 +17,7 @@ import {
   DeleteOutlined,
 } from '@ant-design/icons';
 import { Link } from 'umi';
-import { ls, nest } from '@/utils/utils';
+import { ls, menusNest } from '@/utils/utils';
 
 import './list.less';
 import request from '@/utils/request';
@@ -32,7 +32,7 @@ interface SelectObject {
 interface RootObject {
   treeData: any[];
   reqData: any[];
-  firstArr: any[];
+  firstArr: string;
   selectObject: SelectObject;
   depChildren: any[];
   visible: boolean;
@@ -159,7 +159,7 @@ class List extends Component {
   state: RootObject = {
     treeData: [],
     reqData: [],
-    firstArr: [],
+    firstArr: '',
     selectObject: {
       dept_id: 0,
       com_id: 0,
@@ -204,12 +204,13 @@ class List extends Component {
       it.parent_nameBack = it.parent_name;
       return it;
     });
+
     var firstArrStr = reqData[0].dept_id;
     this.setState({
       reqData,
-      firstArr: [firstArrStr],
+      firstArr: firstArrStr,
     });
-    var newReqData = nest(reqData, 0, 'parent_id');
+    var newReqData = menusNest(reqData, 0, 'parent_id');
     this.setState({
       treeData: newReqData,
     });
@@ -229,7 +230,7 @@ class List extends Component {
       visible: false,
     });
   };
-  clickdatahandler = (type, val) => {
+  clickdatahandler = (type: string, val: string) => {
     var oldata = this.state.clickObject;
     oldata[type] = val;
     this.setState({
@@ -398,29 +399,32 @@ class List extends Component {
               className="gutter-row"
               style={{ height: 'calc(100vh)', overflow: 'auto' }}
             >
-              <Tree
-                showLine
-                blockNode
-                expandedKeys={firstArr}
-                treeData={treeData}
-                onSelect={this.onSelect}
-                className="my-tree tree-wrap"
-                titleRender={(row: any) => {
-                  return (
-                    <>
-                      <div className="tit">{row.title}</div>
-                      <div className="btns">
-                        {row.parent_id != 0 ? (
-                          <FormOutlined onClick={e => this.edit(e, row)} />
-                        ) : null}
-                        {!row.children.length && row.parent_id != 0 ? (
-                          <DeleteOutlined onClick={e => this.del(e, row)} />
-                        ) : null}
-                      </div>
-                    </>
-                  );
-                }}
-              ></Tree>
+              {treeData.length ? (
+                <Tree
+                  showLine
+                  blockNode
+                  autoExpandParent
+                  defaultExpandedKeys={[firstArr]}
+                  treeData={treeData}
+                  onSelect={this.onSelect}
+                  className="my-tree tree-wrap"
+                  titleRender={(row: any) => {
+                    return (
+                      <>
+                        <div className="tit">{row.title}</div>
+                        <div className="btns">
+                          {row.parent_id != 0 ? (
+                            <FormOutlined onClick={e => this.edit(e, row)} />
+                          ) : null}
+                          {!row.children.length && row.parent_id != 0 ? (
+                            <DeleteOutlined onClick={e => this.del(e, row)} />
+                          ) : null}
+                        </div>
+                      </>
+                    );
+                  }}
+                ></Tree>
+              ) : null}
             </div>
           </Col>
           <Col span={18}>

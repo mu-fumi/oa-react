@@ -1,15 +1,26 @@
 import React, { Component } from 'react';
 import { Link } from 'umi';
-import { Row, Col, Button, Form, Input, DatePicker, Select } from 'antd';
+import {
+  Row,
+  Col,
+  Button,
+  Form,
+  Input,
+  DatePicker,
+  Select,
+  Table,
+  Pagination,
+} from 'antd';
 
 import './list.less';
 import request from '@/utils/request';
 import { Moment } from 'moment';
+import DepartmentTree from '@/components/DepartmentTree';
 
 interface pageObjectType {
   pageSize: number;
   pageNo: number;
-  total: number;
+  totalCount: number;
 }
 interface formInlineType {
   keywords: string;
@@ -25,6 +36,7 @@ interface formInlineType {
 interface RootObject {
   isSearchAll: boolean;
   isSearch: boolean;
+  dept_id: number;
   employmentFormArr: any[];
   cityArr: any[];
   leave_typeArr: any[];
@@ -34,10 +46,76 @@ interface RootObject {
   pageObject: pageObjectType;
 }
 
+const columns = [
+  {
+    title: '序号',
+    render: (text: any, record: any, index: any) => `${index + 1}`,
+    width: 60,
+    ellipsis: true,
+  },
+  {
+    title: '工号',
+    dataIndex: 'staff_sn',
+    ellipsis: true,
+  },
+  {
+    title: '姓名',
+    dataIndex: 'username',
+    ellipsis: true,
+    render: (text: any, record: any, index: any) => (
+      <Link to={'/admin/sysmanage/people-info/' + record.userid}>{text}</Link>
+    ),
+  },
+  {
+    title: '部门',
+    dataIndex: 'fill_dept_name',
+    ellipsis: true,
+    width: '12%',
+  },
+  {
+    title: '职位',
+    dataIndex: 'position',
+    ellipsis: true,
+  },
+  {
+    title: '入职日期',
+    dataIndex: 'entry_date',
+    ellipsis: true,
+  },
+  {
+    title: '手机号',
+    dataIndex: 'mobile',
+    ellipsis: true,
+  },
+  {
+    title: '邮箱',
+    dataIndex: 'email',
+    ellipsis: true,
+  },
+  {
+    title: '人员性质',
+    dataIndex: 'employment_form',
+    ellipsis: true,
+  },
+  {
+    title: '人员状态',
+    dataIndex: 'is_leave',
+    ellipsis: true,
+    render: (text: string, record: any, index: number) =>
+      `${record.is_leave ? '离职' : '在职'}`,
+  },
+  {
+    title: 'base地',
+    dataIndex: 'base_city',
+  },
+];
+
 class index extends Component {
   state: RootObject = {
     isSearch: false,
     isSearchAll: false,
+
+    dept_id: 0,
 
     employmentFormArr: [],
     cityArr: [],
@@ -57,7 +135,7 @@ class index extends Component {
     pageObject: {
       pageSize: 10,
       pageNo: 1,
-      total: 0,
+      totalCount: 0,
     },
 
     list: [],
@@ -65,16 +143,31 @@ class index extends Component {
 
   componentDidMount() {
     this.getTypes();
-    this.getList();
+    // this.getList();
   }
 
   toAdd = () => {};
 
   handleSubmit = () => {
-    this.setState({
-      isSearchAll: true,
-    });
-    this.getList();
+    this.setState(
+      {
+        isSearchAll: true,
+      },
+      () => {
+        this.getList();
+      },
+    );
+  };
+  menuSelect = (dept_id: number) => {
+    this.setState(
+      {
+        dept_id: dept_id,
+        isSearchAll: false,
+      },
+      () => {
+        this.getList();
+      },
+    );
   };
   itemChange = (val: any, type: string) => {
     var ol: any = this.state.formInline;
@@ -112,19 +205,27 @@ class index extends Component {
   getList = () => {
     var data: any = !this.state.isSearchAll
       ? {
-          dept_id: '',
+          dept_id: this.state.dept_id,
           ...this.state.pageObject,
         }
       : {
-          ...data,
+          ...this.state.formInline,
           ...this.state.pageObject,
         };
     request('/user/list_paging', {
       method: 'GET',
       params: data,
     }).then(res => {
+      console.log('res -> :', res);
+      var page = {
+        pageNo: res.result.pageNo,
+        pageSize: res.result.pageSize,
+        totalCount: res.result.totalCount,
+        totalPage: res.result.totalPage,
+      };
       this.setState({
-        list: res.result,
+        list: res.result.data,
+        pageObject: page,
       });
     });
   };
@@ -146,10 +247,24 @@ class index extends Component {
       total: 0,
     };
     this.setState({
-      formInline: obj,
+      formInline: { ...obj },
       pageObject: pageObj,
     });
     this.getList();
+  };
+
+  pageChange = (page: any, size: any) => {
+    var pageol = this.state.pageObject;
+    pageol.pageNo = page;
+    pageol.pageSize = size;
+    this.setState(
+      {
+        pageObject: pageol,
+      },
+      () => {
+        this.getList();
+      },
+    );
   };
 
   render() {
@@ -164,20 +279,20 @@ class index extends Component {
     return (
       <>
         <Row gutter={16}>
-          <Col xs={24} sm={24} md={24} lg={24} xl={4}>
+          <Col xs={24} sm={24} md={24} lg={24} xl={5}>
             <div
               className="gutter-row"
               style={{
-                padding: '0px',
+                padding: '4px',
                 height: 'calc(100vh + 44px)',
                 overflow: 'auto',
                 minHeight: 'unset',
               }}
             >
-              13213
+              <DepartmentTree menuSelect={this.menuSelect}></DepartmentTree>
             </div>
           </Col>
-          <Col xs={24} sm={24} md={24} lg={24} xl={20}>
+          <Col xs={24} sm={24} md={24} lg={24} xl={19}>
             <div className="btns">
               <div>
                 <Button onClick={() => this.setState({ isSearch: !isSearch })}>
@@ -205,14 +320,14 @@ class index extends Component {
               style={{ display: isSearch ? 'block' : 'none' }}
             >
               <Form layout="inline">
-                <Form.Item label="工号/姓名/账号" name="keywords">
+                <Form.Item label="工号/姓名/账号">
                   <Input
                     placeholder="工号/姓名/账号"
                     value={formInline.keywords}
                     onChange={e => this.itemChange(e.target.value, 'keywords')}
                   />
                 </Form.Item>
-                <Form.Item label="职位" name="position">
+                <Form.Item label="职位">
                   <Input
                     placeholder="职位"
                     value={formInline.position}
@@ -264,7 +379,7 @@ class index extends Component {
                   </Form.Item>
                 </Form.Item>
 
-                <Form.Item label="人员性质" name="employment_form">
+                <Form.Item label="人员性质">
                   <Select
                     style={{ width: '200px' }}
                     placeholder="请选择人员性质"
@@ -284,7 +399,7 @@ class index extends Component {
                     ))}
                   </Select>
                 </Form.Item>
-                <Form.Item label="工作城市" name="base_city">
+                <Form.Item label="工作城市">
                   <Select
                     style={{ width: '200px' }}
                     placeholder="请选择工作城市"
@@ -308,7 +423,23 @@ class index extends Component {
                 </Form.Item>
               </Form>
             </div>
-         
+
+            <div>
+              <Table
+                columns={columns}
+                dataSource={list}
+                pagination={false}
+                rowKey={record => record.userid}
+              />
+            </div>
+            <div style={{ textAlign: 'right', marginTop: '10px' }}>
+              <Pagination
+                onChange={this.pageChange}
+                current={pageObject.pageNo}
+                pageSize={pageObject.pageSize}
+                total={pageObject.totalCount}
+              />
+            </div>
           </Col>
         </Row>
       </>

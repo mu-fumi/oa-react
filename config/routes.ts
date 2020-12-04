@@ -93,6 +93,13 @@ export const routes: IRoute[] = [
                     component: '@/pages/people/List',
                   },
                   {
+                    path: 'people-info/:id',
+                    perm: 'admin.people.info',
+                    hideInMenu: true,
+                    name: '员工详情',
+                    component: '@/pages/people/Info',
+                  },
+                  {
                     path: 'organize',
                     perm: 'admin.organize',
                     name: '组织',

@@ -1,14 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Row,
-  Col,
-  Button,
-  Card,
-  Table,
-  Input,
-  Select,
-  Pagination,
-} from 'antd';
+import { Row, Col, Button, Card, Table, Input, Select, Pagination } from 'antd';
 import { ConnectProps, connect, Link, Dispatch } from 'umi';
 import { orderListType } from './models/list';
 
@@ -103,14 +94,7 @@ function index({ dispatch, orderList }: SecurityLayoutProps) {
       payload: o,
     });
   };
-  const sizeChange = (pageNo: any, pageSize: any) => {
-    var o = { ...req, pageNo, pageSize };
-    setreq(o);
-    dispatch({
-      type: 'orderList/fetchList',
-      payload: o,
-    });
-  };
+
   const typechange = (val: any, option: any) => {
     var o = { ...req, order_type: val };
     setreq(o);
@@ -198,8 +182,8 @@ function index({ dispatch, orderList }: SecurityLayoutProps) {
         <div style={{ textAlign: 'right', marginTop: '10px' }}>
           <Pagination
             onChange={pageChange}
-            onShowSizeChange={sizeChange}
-            defaultCurrent={orderList.pageNo}
+            current={orderList.pageNo}
+            pageSize={orderList.pageSize}
             total={orderList.totalCount}
           />
         </div>

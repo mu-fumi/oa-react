@@ -120,7 +120,7 @@ export default function index() {
     }
     const isLt2M = file.size / 1024 / 1024 < 2;
     if (!isLt2M) {
-      //   message.error('图片大小不能超过2M');
+      message.error('图片大小不能超过2M');
     }
 
     // 图片文件大小限制，
