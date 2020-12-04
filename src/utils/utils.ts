@@ -7,6 +7,9 @@ export const isUrl = (path: string): boolean => reg.test(path);
 
 export const getPageQuery = () => parse(window.location.href.split('?')[1]);
 
+export const getKeys = <T extends {}>(o: T): Array<keyof T> =>
+  <Array<keyof T>>Object.keys(o);
+
 /**
  * localStorage 封装
  */
