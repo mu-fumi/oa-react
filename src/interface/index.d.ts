@@ -1,7 +1,7 @@
 export interface RequestRes<T> {
   code: number;
   result: T;
-  msg: string;
+  msg?: string;
 }
 
 export interface PageRequestRes<T>

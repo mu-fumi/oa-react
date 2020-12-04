@@ -66,7 +66,7 @@ export const routes: IRoute[] = [
                 path: 'edit/:id',
                 perm: 'project.edit',
                 hideInMenu: true,
-                name: '项目新增',
+                name: '项目编辑',
                 component: '@/pages/project/Edit',
               },
               {

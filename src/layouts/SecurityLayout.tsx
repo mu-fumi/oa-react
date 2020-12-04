@@ -4,6 +4,7 @@ import { Redirect, connect, ConnectProps } from 'umi';
 import { stringify } from 'querystring';
 import { ConnectState } from '@/models/connect';
 import { CurrentUser } from '@/models/user';
+import BaseLocal from '@/components/BaseLocal';
 
 interface SecurityLayoutProps extends ConnectProps {
   loading?: boolean;
@@ -50,7 +51,7 @@ class SecurityLayout extends React.Component<
     if (!isLogin && window.location.pathname !== '/user') {
       return <Redirect to={`/user?${queryString}`} />;
     }
-    return children;
+    return <BaseLocal>{children}</BaseLocal>;
   }
 }
 
