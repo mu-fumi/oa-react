@@ -6,13 +6,13 @@ export default () => {
   const goInfo = () => {
     history.push('info');
   };
-  const hanlderEdit = (id: number) => {
-    history.push(`edit/${id}`);
+  const hanlderAdd = () => {
+    history.push('add');
   };
   return (
     <div>
       <Button onClick={goInfo}>详情</Button>
-      <Button onClick={() => hanlderEdit(1)}>去新增</Button>
+      <Button onClick={() => hanlderAdd()}>去新增</Button>
     </div>
   );
 };
