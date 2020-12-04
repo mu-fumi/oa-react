@@ -9,7 +9,6 @@ import {
   Select,
   message,
   Modal,
-  ConfigProvider,
   Form,
 } from 'antd';
 import {
@@ -19,10 +18,10 @@ import {
 } from '@ant-design/icons';
 import { Link } from 'umi';
 import { ls, nest } from '@/utils/utils';
-import zhCN from 'antd/es/locale/zh_CN';
 
 import './list.less';
 import request from '@/utils/request';
+import PeopleSelect from '@/components/PeopleSelect';
 
 interface SelectObject {
   dept_id: number;
@@ -54,7 +53,14 @@ function UpdateDep({ visible, hideModal, clickObject }: any) {
     },
   };
 
-  const subForm = () => {};
+  const subForm = () => {
+
+    console.log('clickObject -> :', clickObject);
+
+  };
+  const itemChange = (type, val) => {
+    clickObject[type] = val;
+  };
 
   return (
     <Modal
@@ -68,53 +74,37 @@ function UpdateDep({ visible, hideModal, clickObject }: any) {
       cancelText="取消"
     >
       <Form preserve={false} form={form} {...formItemLayout}>
-        <Form.Item label="手机号/账号:">{clickObject.mobile}</Form.Item>
-        <Form.Item
-          label="原密码"
-          name="old_pwd"
-          rules={[{ required: true, message: '请输入原密码' }]}
-        >
-          <Input placeholder="请输入原密码" />
+        <Form.Item label="部门名称:">{clickObject.dept_name}</Form.Item>
+        <Form.Item label="部门类别" name="old_pwd">
+          <Select
+            value={1}
+            onChange={e => itemChange('dept_type', e)}
+          >
+            <Select.Option value={1}>部门</Select.Option>
+            {/* <Select.Option value={2}>事业部</Select.Option> */}
+            <Select.Option value={3}>子公司</Select.Option>
+          </Select>
         </Form.Item>
-        <Form.Item
-          label="新密码"
-          name="new_pwd"
-          rules={[
-            {
-              required: true,
-              message: '请输入新密码',
-              validateTrigger: 'blur',
-            },
-            {
-              min: 6,
-              max: 20,
-              message: '请输入 6 到 20 位的密码',
-              validateTrigger: 'blur',
-            },
-          ]}
-        >
-          <Input placeholder="请输入新密码" />
-        </Form.Item>
-        <Form.Item
-          label="重复新密码"
-          name="repeatNew_pwd"
-          rules={[
-            {
-              required: true,
-              message: '请重复新密码',
-            },
 
-            ({ getFieldValue }) => ({
-              validator(rule, value) {
-                if (!value || getFieldValue('new_pwd') === value) {
-                  return Promise.resolve();
-                }
-                return Promise.reject('两次密码不一样');
-              },
-            }),
-          ]}
-        >
+        <Form.Item label="部门负责人" name="new_pwd">
+          <PeopleSelect
+            unFilterUsers={clickObject.manager_ids}
+            mode="multiple"
+            allUser
+            onChange={e => itemChange('manager_ids', e)}
+          ></PeopleSelect>
+        </Form.Item>
+
+        <Form.Item label="上级部门">
           <Input placeholder="请重复新密码" />
+        </Form.Item>
+
+        <Form.Item label="说明">
+          <Input
+            placeholder="请输入说明"
+            value={clickObject.remark}
+            onChange={e => itemChange('remark', e.target.value)}
+          />
         </Form.Item>
       </Form>
     </Modal>
@@ -155,15 +145,17 @@ class List extends Component {
     var reqData = res.map((it: any) => {
       it.key = it.dept_id;
       it.title = it.dept_name;
-      if (it.manager_name) {
-        it.managerList = it.manager_name
-          ?.split(',')
-          .map((name: any, ind: number) => ({
-            username: name,
-            userid: it.manager_id?.split(',')[ind],
-          }));
-      }
-      it.managerListBack = it.managerList || [];
+      it.manager_ids = it.manager_id?.split(',') || [];
+
+      //   if (it.manager_name) {
+      // it.managerList = it.manager_name
+      //   ?.split(',')
+      //   .map((name: any, ind: number) => ({
+      //     username: name,
+      //     userid: it.manager_id?.split(',')[ind],
+      //   }));
+      //   }
+      //   it.managerListBack = it.managerList || [];
       it.parent_idBack = it.parent_id;
       it.parent_nameBack = it.parent_name;
       return it;
@@ -195,12 +187,13 @@ class List extends Component {
   };
 
   edit = (e: any, row: any) => {
+    console.log('row -> :', row)
     e.stopPropagation();
     this.setState({
       visible: true,
       selectObject: {},
+      clickObject: row,
     });
-    console.log('row -> :', row);
   };
   del = (e: any, row: any) => {
     e.stopPropagation();
@@ -331,10 +324,9 @@ class List extends Component {
       visible,
       clickObject,
     } = this.state;
-    console.log('firstArr -> :', firstArr);
 
     return (
-      <ConfigProvider locale={zhCN}>
+      <>
         <Row className="top-row">
           <Col span={12} className="top-left">
             <span className="bar"></span>
@@ -444,7 +436,7 @@ class List extends Component {
           hideModal={this.hideModal}
           clickObject={clickObject}
         ></UpdateDep>
-      </ConfigProvider>
+      </>
     );
   }
 }
