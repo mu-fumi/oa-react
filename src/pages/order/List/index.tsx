@@ -5,68 +5,47 @@ import {
   Button,
   Card,
   Table,
-  Space,
-  Tag,
+  Input,
+  Select,
   Pagination,
   ConfigProvider,
 } from 'antd';
 import { ConnectProps, connect, Link, Dispatch } from 'umi';
-import { OrderListModelType } from './models/list';
+import { orderListType } from './models/list';
 import zhCN from 'antd/lib/locale/zh_CN';
 
 import './list.less';
+import request from '@/utils/request';
+
+const { Option } = Select;
 interface SecurityLayoutProps extends ConnectProps {
   dispatch: Dispatch;
-  orderList: any;
+  orderList: orderListType;
 }
 interface SecurityLayoutState {}
 
 const columns = [
   {
-    title: 'Name',
-    dataIndex: 'name',
-    key: 'name',
-    render: (text: any) => <a>{text}</a>,
+    title: '序号',
+    render: (text: any, record: any, index: any) => `${index + 1}`,
   },
   {
-    title: 'Age',
-    dataIndex: 'age',
-    key: 'age',
+    title: '标题',
+    dataIndex: 'order_name',
   },
   {
-    title: 'Address',
-    dataIndex: 'address',
-    key: 'address',
+    title: '订单金额',
+
+    dataIndex: 'order_money',
   },
   {
-    title: 'Tags',
-    key: 'tags',
-    dataIndex: 'tags',
-    render: (tags: any) => (
-      <>
-        {tags.map((tag: any) => {
-          let color = tag.length > 5 ? 'geekblue' : 'green';
-          if (tag === 'loser') {
-            color = 'volcano';
-          }
-          return (
-            <Tag color={color} key={tag}>
-              {tag.toUpperCase()}
-            </Tag>
-          );
-        })}
-      </>
-    ),
+    title: '待回款',
+    dataIndex: 'not_payment',
   },
   {
-    title: 'Action',
-    key: 'action',
-    render: (text: any, record: any) => (
-      <Space size="middle">
-        <a>Invite {record.name}</a>
-        <a>Delete</a>
-      </Space>
-    ),
+    title: '入离场时间',
+    render: (text: any, record: any, index: any) =>
+      `${record.in_time} - ${record.out_time}`,
   },
 ];
 
@@ -92,14 +71,21 @@ function index({ dispatch, orderList }: SecurityLayoutProps) {
     totalPage: 0,
   });
 
-  const [list, setList] = useState([]);
+  const [orderType, setOrderType] = useState([]);
 
   useEffect(() => {
+    getorderType();
     dispatch({
       type: 'orderList/fetchList',
       payload: req,
     });
   }, []);
+
+  const getorderType = () => {
+    request('/order/type').then(res => {
+      setOrderType(res.result);
+    });
+  };
 
   const changeStatus = (status: any, index: number) => {
     setact(index);
@@ -125,6 +111,22 @@ function index({ dispatch, orderList }: SecurityLayoutProps) {
     dispatch({
       type: 'orderList/fetchList',
       payload: o,
+    });
+  };
+  const typechange = (val: any, option: any) => {
+    var o = { ...req, order_type: val };
+    setreq(o);
+  };
+  const nameChange = (e: any) => {
+    var o = { ...req, order_name: e.target.value };
+    setreq(o);
+  };
+
+  const btnSearch = () => {
+    console.log('req -> :', req);
+    dispatch({
+      type: 'orderList/fetchList',
+      payload: req,
     });
   };
 
@@ -154,11 +156,45 @@ function index({ dispatch, orderList }: SecurityLayoutProps) {
             </span>
           ))}
         </p>
+
+        <Row className="search-from">
+          <Col span={8}>
+            按名称/单号查找 : &nbsp;
+            <Input
+              style={{ width: '60%' }}
+              onChange={nameChange}
+              placeholder="按名称/单号查找"
+            />
+          </Col>
+          <Col span={8}>
+            订单类型 : &nbsp;
+            <Select
+              defaultValue=""
+              style={{ width: '80%' }}
+              placeholder="订单类型"
+              onChange={typechange}
+            >
+              <Option value="">全部</Option>
+              {orderType.map((it: any, index) => (
+                <Option key={index} value={it.id}>
+                  {it.order_type_name}
+                </Option>
+              ))}
+            </Select>
+          </Col>
+          <Col span={8}>
+            <Button type="primary" onClick={btnSearch}>
+              搜索
+            </Button>
+          </Col>
+        </Row>
+
         <div>
           <Table
             columns={columns}
             dataSource={orderList.data}
             pagination={false}
+            rowKey={record => record.id}
           />
         </div>
         <div style={{ textAlign: 'right', marginTop: '10px' }}>
@@ -174,6 +210,6 @@ function index({ dispatch, orderList }: SecurityLayoutProps) {
   );
 }
 
-export default connect(({ orderList }: { orderList: OrderListModelType }) => ({
+export default connect(({ orderList }: { orderList: orderListType }) => ({
   orderList,
 }))(index);

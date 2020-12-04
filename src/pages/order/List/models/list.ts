@@ -1,63 +1,41 @@
 import { Effect, Reducer } from 'umi';
 import request from '@/utils/request';
-
+export interface orderListType {
+  data: dataum[];
+  pageNo: number;
+  pageSize: number;
+  totalCount: number;
+  totalPage: number;
+}
+export interface dataum {
+  id: number;
+  order_name: string;
+  order_money: string;
+  in_time: string;
+  out_time: string;
+  order_num: string;
+  project_name: string;
+  order_type_name: string;
+  payment: string;
+  not_payment: number;
+}
 export interface OrderListModelType {
   namespace: string;
-  state: object;
+  state: orderListType;
   effects: {
     fetchList: Effect;
   };
   reducers: {
     changeList: Reducer;
   };
-  subscribe: object;
+  subscribe: {};
 }
 
 let getList = (req: any) => {
-  return {
-    data:
-      req.payment_status === 0
-        ? [
-            {
-              key: '1',
-              name: 'John Brown',
-              age: 32,
-              address: 'New York No. 1 Lake Park',
-              tags: ['nice', 'developer'],
-            },
-            {
-              key: '2',
-              name: 'Jim Green',
-              age: 42,
-              address: 'London No. 1 Lake Park',
-              tags: ['loser'],
-            },
-            {
-              key: '3',
-              name: 'Joe Black',
-              age: 32,
-              address: 'Sidney No. 1 Lake Park',
-              tags: ['cool', 'teacher'],
-            },
-          ]
-        : [
-            {
-              key: '1',
-              name: 'John Brown',
-              age: 32,
-              address: 'New York No. 1 Lake Park',
-              tags: ['nice', 'developer'],
-            },
-          ],
-    pageNo: 1,
-    pageSize: 10,
-    totalCount: 60,
-    totalPage: 6,
-  };
-  //   request('/order/list', {
-  //     method: 'GET',
-  //     params: req,
-  //   });
+  return request('/order/list', {
+    method: 'GET',
+    params: req,
+  });
 };
 
 const OrderListModel: OrderListModelType = {
@@ -66,7 +44,7 @@ const OrderListModel: OrderListModelType = {
   state: {
     data: [],
     pageNo: 1,
-    pageSize: '',
+    pageSize: 10,
     totalCount: 1,
     totalPage: 1,
   },
@@ -78,7 +56,7 @@ const OrderListModel: OrderListModelType = {
   },
   effects: {
     *fetchList(_, { call, put }) {
-      const result = yield call(getList, _.payload);
+      const { result } = yield call(getList, _.payload);
       yield put({
         type: 'changeList',
         data: result,
