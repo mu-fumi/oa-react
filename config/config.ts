@@ -10,6 +10,7 @@ if (IS_PROD) {
 }
 
 export default defineConfig({
+  title: '棱镜',
   define: {
     'process.env.NODE_ENV': 'development',
     'process.env.APP_API_BASE_URL': '/api',
