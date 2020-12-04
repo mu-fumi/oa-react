@@ -8,11 +8,9 @@ import {
   Input,
   Select,
   Pagination,
-  ConfigProvider,
 } from 'antd';
 import { ConnectProps, connect, Link, Dispatch } from 'umi';
 import { orderListType } from './models/list';
-import zhCN from 'antd/lib/locale/zh_CN';
 
 import './list.less';
 import request from '@/utils/request';
@@ -131,7 +129,7 @@ function index({ dispatch, orderList }: SecurityLayoutProps) {
   };
 
   return (
-    <ConfigProvider locale={zhCN}>
+    <>
       <Row className="top-row">
         <Col span={12} className="top-left">
           <span className="bar"></span>
@@ -206,7 +204,7 @@ function index({ dispatch, orderList }: SecurityLayoutProps) {
           />
         </div>
       </Card>
-    </ConfigProvider>
+    </>
   );
 }
 

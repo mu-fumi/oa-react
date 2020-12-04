@@ -1,10 +1,13 @@
 import React from 'react';
-import './userlayout.less'
+import './userlayout.less';
+import BaseLocal from '@/components/BaseLocal';
 
 const Layout: React.FC = ({ children }) => (
-  <div id="userLayout" className="user-layout-wrapper">
-    <div className="container">{children}</div>
-  </div>
+  <BaseLocal>
+    <div id="userLayout" className="user-layout-wrapper">
+      <div className="container">{children}</div>
+    </div>
+  </BaseLocal>
 );
 
 export default Layout;

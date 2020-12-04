@@ -36,11 +36,19 @@ interface RootObject {
   selectObject: SelectObject;
   depChildren: any[];
   visible: boolean;
-  clickObject: {};
+  clickObject: any;
 }
 
-function UpdateDep({ visible, hideModal, clickObject }: any) {
+// 修改组件，上级部门还没写
+function UpdateDep({
+  visible,
+  hideModal,
+  clickObject,
+  changeDatahandler,
+  getList,
+}: any) {
   const [form] = Form.useForm();
+  const [confirmLoading, setconfirmLoading] = useState(false);
 
   const formItemLayout = {
     labelCol: {
@@ -54,12 +62,38 @@ function UpdateDep({ visible, hideModal, clickObject }: any) {
   };
 
   const subForm = () => {
+    var data = clickObject;
+    if (!data.dept_name) {
+      message.error('部门名称不能为空');
+      return false;
+    }
+    if (!data.dept_type) {
+      message.error('部门类别不能为空');
+      return false;
+    }
+    if (!data.parent_name) {
+      message.error('上级部门不能为空');
+      return false;
+    }
 
-    console.log('clickObject -> :', clickObject);
-
+    if (data.manager_ids.length) {
+      data.manager_id = data.manager_ids.join(',');
+    }
+    setconfirmLoading(true);
+    var reqData = {
+      data: JSON.stringify([data]),
+    };
+    request('/dept/addUpdate', {
+      method: 'POST',
+      data: reqData,
+    }).then(res => {
+      setconfirmLoading(false);
+      hideModal();
+      getList();
+    });
   };
   const itemChange = (type, val) => {
-    clickObject[type] = val;
+    changeDatahandler(type, val);
   };
 
   return (
@@ -70,14 +104,23 @@ function UpdateDep({ visible, hideModal, clickObject }: any) {
       visible={visible}
       onOk={subForm}
       onCancel={hideModal}
+      confirmLoading={confirmLoading}
       okText="确认"
       cancelText="取消"
     >
       <Form preserve={false} form={form} {...formItemLayout}>
-        <Form.Item label="部门名称:">{clickObject.dept_name}</Form.Item>
-        <Form.Item label="部门类别" name="old_pwd">
+        <Form.Item label="部门名称:">
+          <Input
+            placeholder="请输入部门名称"
+            value={clickObject.dept_name}
+            onChange={e => itemChange('dept_name', e.target.value)}
+          />
+        </Form.Item>
+        <Form.Item label="部门类别:" name="dept_type">
           <Select
-            value={1}
+            placeholder="请输入部门类别"
+            value={clickObject.dept_type}
+            defaultValue={clickObject.dept_type}
             onChange={e => itemChange('dept_type', e)}
           >
             <Select.Option value={1}>部门</Select.Option>
@@ -86,8 +129,9 @@ function UpdateDep({ visible, hideModal, clickObject }: any) {
           </Select>
         </Form.Item>
 
-        <Form.Item label="部门负责人" name="new_pwd">
+        <Form.Item label="部门负责人:" name="manager_ids">
           <PeopleSelect
+            placeholder="请选择部门负责人"
             unFilterUsers={clickObject.manager_ids}
             mode="multiple"
             allUser
@@ -95,11 +139,11 @@ function UpdateDep({ visible, hideModal, clickObject }: any) {
           ></PeopleSelect>
         </Form.Item>
 
-        <Form.Item label="上级部门">
-          <Input placeholder="请重复新密码" />
+        <Form.Item label="上级部门:">
+          <Input placeholder="请重复上级部门" />
         </Form.Item>
 
-        <Form.Item label="说明">
+        <Form.Item label="说明:">
           <Input
             placeholder="请输入说明"
             value={clickObject.remark}
@@ -185,9 +229,15 @@ class List extends Component {
       visible: false,
     });
   };
-
+  clickdatahandler = (type, val) => {
+    var oldata = this.state.clickObject;
+    oldata[type] = val;
+    this.setState({
+      clickObject: oldata,
+    });
+  };
   edit = (e: any, row: any) => {
-    console.log('row -> :', row)
+    console.log('row -> :', row);
     e.stopPropagation();
     this.setState({
       visible: true,
@@ -434,6 +484,8 @@ class List extends Component {
         <UpdateDep
           visible={visible}
           hideModal={this.hideModal}
+          changeDatahandler={this.clickdatahandler}
+          getList={this.getTree}
           clickObject={clickObject}
         ></UpdateDep>
       </>

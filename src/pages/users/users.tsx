@@ -1,6 +1,5 @@
 import React from 'react';
-import { Button, DatePicker, ConfigProvider, message } from 'antd';
-import zhCN from 'antd/es/locale/zh_CN';
+import { Button, DatePicker, message } from 'antd';
 
 import {
   HomeOutlined,
@@ -21,7 +20,7 @@ export default () => {
   };
 
   return (
-    <ConfigProvider locale={zhCN}>
+    <>
       <div>
         <br />
         <Button type="text" onClick={success}>
@@ -40,6 +39,6 @@ export default () => {
         <DatePicker></DatePicker>
         <Line></Line>
       </div>
-    </ConfigProvider>
+    </>
   );
 };
