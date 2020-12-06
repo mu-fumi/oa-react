@@ -4,7 +4,17 @@ import './index.less';
 import request from '@/utils/request';
 import { menusNest } from '@/utils/utils';
 
-export default function index({ menuSelect }) {
+interface PropsTypes {
+  menuSelect?: Function;
+  parentDetHandler?: Function;
+  defaultData?: number;
+}
+
+export default function index({
+  menuSelect = () => {},
+  parentDetHandler = () => {},
+  defaultData,
+}: PropsTypes) {
   const [treeData, setTreeData] = useState([]);
   const [reqData, setreqData] = useState([]);
   const [firstArr, setfirstArr] = useState('');
@@ -35,7 +45,7 @@ export default function index({ menuSelect }) {
     var firstArrStr = reqData[0].dept_id;
     menuSelect(firstArrStr);
     setreqData(reqData);
-    setfirstArr(firstArrStr);
+    setfirstArr(defaultData || firstArrStr);
     var newReqData = menusNest(reqData, 0, 'parent_id');
     setTreeData(newReqData);
   };
@@ -43,7 +53,7 @@ export default function index({ menuSelect }) {
   const onSelect = (row: any) => {
     if (row[0]) {
       var obj: any = reqData.find((it: any) => it.dept_id === row[0]);
-      console.log('obj -> :', obj);
+      parentDetHandler(obj);
       menuSelect(row[0]);
     }
   };
@@ -59,7 +69,7 @@ export default function index({ menuSelect }) {
           defaultExpandedKeys={[firstArr]}
           treeData={treeData}
           onSelect={onSelect}
-          className="my-tree tree-wrap"
+          className="tree-dep"
         ></Tree>
       ) : null}
     </>

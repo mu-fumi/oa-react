@@ -281,7 +281,7 @@ class index extends Component {
         <Row gutter={16}>
           <Col xs={24} sm={24} md={24} lg={24} xl={5}>
             <div
-              className="gutter-row"
+              className="gutter-row-people"
               style={{
                 padding: '4px',
                 height: 'calc(100vh + 44px)',
@@ -293,7 +293,7 @@ class index extends Component {
             </div>
           </Col>
           <Col xs={24} sm={24} md={24} lg={24} xl={19}>
-            <div className="btns">
+            <div className="btns-wrap">
               <div>
                 <Button onClick={() => this.setState({ isSearch: !isSearch })}>
                   搜索

@@ -12,7 +12,7 @@ import {
   Form,
 } from 'antd';
 import {
-  CarryOutOutlined,
+  PlusCircleOutlined,
   FormOutlined,
   DeleteOutlined,
 } from '@ant-design/icons';
@@ -22,6 +22,7 @@ import { ls, menusNest } from '@/utils/utils';
 import './list.less';
 import request from '@/utils/request';
 import PeopleSelect from '@/components/PeopleSelect';
+import DepartmentTree from '@/components/DepartmentTree';
 
 interface SelectObject {
   dept_id: number;
@@ -39,7 +40,44 @@ interface RootObject {
   clickObject: any;
 }
 
-// 修改组件，上级部门还没写
+// 上级部门;
+function ChooseDepTree({
+  treeVisible,
+  hideTreeModal,
+  selectParentDep,
+  defaultData,
+}: any) {
+  const [selectObject, setSelectObject] = useState({});
+
+  const subForm = () => {
+    selectParentDep(selectObject);
+    hideTreeModal();
+  };
+  const parentDetHandler = (val: any) => {
+    setSelectObject(val);
+  };
+
+  return (
+    <Modal
+      title="选择上级部门"
+      destroyOnClose
+      maskClosable={false}
+      visible={treeVisible}
+      onOk={subForm}
+      onCancel={hideTreeModal}
+      okText="确认"
+      cancelText="取消"
+      className="dep-wrap-modal"
+    >
+      <DepartmentTree
+        parentDetHandler={parentDetHandler}
+        defaultData={defaultData}
+      ></DepartmentTree>
+    </Modal>
+  );
+}
+
+// 修改组件，
 function UpdateDep({
   visible,
   hideModal,
@@ -49,6 +87,7 @@ function UpdateDep({
 }: any) {
   const [form] = Form.useForm();
   const [confirmLoading, setconfirmLoading] = useState(false);
+  const [treeVisible, setTreeVisible] = useState(false);
 
   const formItemLayout = {
     labelCol: {
@@ -92,66 +131,82 @@ function UpdateDep({
       getList();
     });
   };
-  const itemChange = (type, val) => {
+  const itemChange = (type: any, val: any) => {
     changeDatahandler(type, val);
+  };
+  const selectParentDep = (val: any) => {
+    changeDatahandler('parent_name', val.dept_name);
+    changeDatahandler('parent_id', val.dept_id);
   };
 
   return (
-    <Modal
-      title="编辑部门"
-      destroyOnClose
-      maskClosable={false}
-      visible={visible}
-      onOk={subForm}
-      onCancel={hideModal}
-      confirmLoading={confirmLoading}
-      okText="确认"
-      cancelText="取消"
-    >
-      <Form preserve={false} form={form} {...formItemLayout}>
-        <Form.Item label="部门名称:">
-          <Input
-            placeholder="请输入部门名称"
-            value={clickObject.dept_name}
-            onChange={e => itemChange('dept_name', e.target.value)}
-          />
-        </Form.Item>
-        <Form.Item label="部门类别:" name="dept_type">
-          <Select
-            placeholder="请输入部门类别"
-            value={clickObject.dept_type}
-            defaultValue={clickObject.dept_type}
-            onChange={e => itemChange('dept_type', e)}
-          >
-            <Select.Option value={1}>部门</Select.Option>
-            {/* <Select.Option value={2}>事业部</Select.Option> */}
-            <Select.Option value={3}>子公司</Select.Option>
-          </Select>
-        </Form.Item>
+    <>
+      <Modal
+        title="编辑部门"
+        destroyOnClose
+        maskClosable={false}
+        visible={visible}
+        onOk={subForm}
+        onCancel={hideModal}
+        confirmLoading={confirmLoading}
+        okText="确认"
+        cancelText="取消"
+      >
+        <Form preserve={false} form={form} {...formItemLayout}>
+          <Form.Item label="部门名称:">
+            <Input
+              placeholder="请输入部门名称"
+              value={clickObject.dept_name}
+              onChange={e => itemChange('dept_name', e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item label="部门类别:" name="dept_type">
+            <Select
+              placeholder="请输入部门类别"
+              value={clickObject.dept_type}
+              defaultValue={clickObject.dept_type}
+              onChange={e => itemChange('dept_type', e)}
+            >
+              <Select.Option value={1}>部门</Select.Option>
+              {/* <Select.Option value={2}>事业部</Select.Option> */}
+              <Select.Option value={3}>子公司</Select.Option>
+            </Select>
+          </Form.Item>
 
-        <Form.Item label="部门负责人:" name="manager_ids">
-          <PeopleSelect
-            placeholder="请选择部门负责人"
-            unFilterUsers={clickObject.manager_ids}
-            mode="multiple"
-            allUser
-            onChange={e => itemChange('manager_ids', e)}
-          ></PeopleSelect>
-        </Form.Item>
+          <Form.Item label="部门负责人:" name="manager_ids">
+            <PeopleSelect
+              placeholder="请选择部门负责人"
+              unFilterUsers={clickObject.manager_ids}
+              mode="multiple"
+              allUser
+              onChange={e => itemChange('manager_ids', e)}
+            ></PeopleSelect>
+          </Form.Item>
 
-        <Form.Item label="上级部门:">
-          <Input placeholder="请重复上级部门" />
-        </Form.Item>
+          <Form.Item label="上级部门:">
+            {clickObject.parent_name} &nbsp;
+            <PlusCircleOutlined
+              onClick={() => setTreeVisible(true)}
+              style={{ cursor: 'pointer' }}
+            />
+          </Form.Item>
 
-        <Form.Item label="说明:">
-          <Input
-            placeholder="请输入说明"
-            value={clickObject.remark}
-            onChange={e => itemChange('remark', e.target.value)}
-          />
-        </Form.Item>
-      </Form>
-    </Modal>
+          <Form.Item label="说明:">
+            <Input
+              placeholder="请输入说明"
+              value={clickObject.remark}
+              onChange={e => itemChange('remark', e.target.value)}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
+      <ChooseDepTree
+        treeVisible={treeVisible}
+        hideTreeModal={() => setTreeVisible(false)}
+        selectParentDep={selectParentDep}
+        defaultData={clickObject.parent_id}
+      ></ChooseDepTree>
+    </>
   );
 }
 
@@ -189,7 +244,8 @@ class List extends Component {
     var reqData = res.map((it: any) => {
       it.key = it.dept_id;
       it.title = it.dept_name;
-      it.manager_ids = it.manager_id?.split(',') || [];
+      it.manager_ids =
+        it.manager_id?.split(',').map((it: any) => Number(it)) || [];
 
       //   if (it.manager_name) {
       // it.managerList = it.manager_name
@@ -226,8 +282,16 @@ class List extends Component {
   };
 
   hideModal = () => {
+    var olddta = this.state.clickObject;
+
+    if (olddta.parent_name != olddta.parent_nameBack) {
+      olddta.parent_name = olddta.parent_nameBack;
+      olddta.parent_id = olddta.parent_idBack;
+    }
+
     this.setState({
       visible: false,
+      clickObject: olddta,
     });
   };
   clickdatahandler = (type: string, val: string) => {
