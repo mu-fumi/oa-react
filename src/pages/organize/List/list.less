@@ -7,16 +7,16 @@
       display: inline-block;
       width: 4px;
       height: 18px;
+      margin: 0 2px;
+      margin-right: 15px;
+      vertical-align: text-top;
       background: linear-gradient(301deg, #4e9bfa 0%, #236bc4 100%);
       border-radius: 8px;
-      margin: 0 2px;
-      vertical-align: text-top;
-      margin-right: 15px;
     }
     .text {
       color: #1d1f25;
-      font-size: 20px;
       font-weight: 500;
+      font-size: 20px;
       font-family: PingFangSC-Medium, PingFang SC;
       line-height: 28px;
     }
@@ -24,9 +24,9 @@
 }
 
 .gutter-row {
-  background: #fff;
-  padding: 10px;
   min-height: calc(100vh);
+  padding: 10px;
+  background: #fff;
 
   .my-tree {
     .ant-tree-title {
@@ -34,13 +34,13 @@
       justify-content: space-between;
     }
     .tit {
-      word-break: break-all;
       width: 80%;
+      word-break: break-all;
     }
     .btns {
-      width: 33px;
       display: flex;
       align-items: center;
+      width: 33px;
       span {
         margin: 0 2px;
       }
@@ -59,8 +59,8 @@
         margin: 0 0 16px;
       }
       .form-div {
-        overflow-y: auto;
         height: calc(90vh);
+        overflow-y: auto;
       }
     }
   }
@@ -68,13 +68,19 @@
 
 .tree-wrap {
   .ant-tree-node-content-wrapper.ant-tree-node-selected {
-    background: none;
     color: #0c64eb;
     white-space: normal;
+    background: none;
   }
 
   .ant-tree-node-content-wrapper:hover {
-    background: none;
     color: #0c64eb;
+    background: none;
+  }
+}
+.dep-wrap-modal {
+  .ant-modal-body {
+    height: 300px;
+    overflow: auto;
   }
 }
