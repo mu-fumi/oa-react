@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Link } from 'umi';
+import { history, Link } from 'umi';
 import {
   Row,
   Col,
@@ -146,7 +146,9 @@ class index extends Component {
     // this.getList();
   }
 
-  toAdd = () => {};
+  toAdd = () => {
+    history.push('/admin/sysmanage/people-edit');
+  };
 
   handleSubmit = () => {
     this.setState(
