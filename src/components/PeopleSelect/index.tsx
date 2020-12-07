@@ -9,8 +9,14 @@ interface PeopleSelectStates {
   userList: ISearchedUser[];
 }
 export interface PeopleSelectProps<VT> extends SelectProps<VT> {
-  unFilterUsers?: number[];
+  /**
+   * 控制是否过滤离职和删除人员
+   */
   allUser?: boolean;
+  /**
+   * 在不过滤离职和删除人员的情况（allUser为false或者不传）下传unFilterUsers追加已经选择的离职/删除人员
+   */
+  unFilterUsers?: number[];
 }
 
 export default class PeopleSelect<
@@ -35,7 +41,6 @@ export default class PeopleSelect<
   };
 
   componentDidMount() {
-    console.log('nnn');
     this.defaultDataUpdate();
   }
 
